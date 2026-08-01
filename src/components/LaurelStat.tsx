@@ -1,8 +1,10 @@
-function LaurelBranch({ flipped = false }: { flipped?: boolean }) {
+type Tone = "dark" | "light";
+
+function LaurelBranch({ flipped = false, tone }: { flipped?: boolean; tone: Tone }) {
   return (
     <svg
       viewBox="0 0 28 64"
-      className={`h-12 w-6 text-maroon ${flipped ? "-scale-x-100" : ""}`}
+      className={`h-12 w-6 ${tone === "light" ? "text-gold-soft" : "text-maroon"} ${flipped ? "-scale-x-100" : ""}`}
       fill="currentColor"
       aria-hidden
     >
@@ -21,17 +23,31 @@ function LaurelBranch({ flipped = false }: { flipped?: boolean }) {
   );
 }
 
-export default function LaurelStat({ value, label }: { value: string; label: string }) {
+export default function LaurelStat({
+  value,
+  label,
+  tone = "dark",
+}: {
+  value: string;
+  label: string;
+  tone?: Tone;
+}) {
   return (
     <div className="flex items-center gap-1">
-      <LaurelBranch />
+      <LaurelBranch tone={tone} />
       <div className="text-center">
-        <p className="font-display text-2xl font-bold text-maroon">{value}</p>
-        <p className="mt-0.5 max-w-24 text-[11px] font-semibold uppercase leading-tight tracking-wide text-ink-soft">
+        <p className={`font-display text-2xl font-bold ${tone === "light" ? "text-cream" : "text-maroon"}`}>
+          {value}
+        </p>
+        <p
+          className={`mt-0.5 max-w-24 text-[11px] font-semibold uppercase leading-tight tracking-wide ${
+            tone === "light" ? "text-cream/70" : "text-ink-soft"
+          }`}
+        >
           {label}
         </p>
       </div>
-      <LaurelBranch flipped />
+      <LaurelBranch flipped tone={tone} />
     </div>
   );
 }
