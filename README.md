@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Go8 Graduation Regalia Configurator
 
-## Getting Started
+Pick an Australian Group of Eight university and a degree level (Bachelor or PhD) and
+preview the academic gown, hood, and cap in an interactive 3D viewer — orbit, zoom,
+and rotate instead of static photos.
 
-First, run the development server:
+## Tech stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Next.js (App Router) + TypeScript + React**
+- **React Three Fiber + drei** for the 3D scene (simple primitives, flat shading — this
+  is a product configurator, not a path tracer)
+- **Tailwind CSS** for the UI
+- **Vitest + React Testing Library + @react-three/test-renderer** for tests
+- **GitHub Actions** for CI (tests + build on every push/PR to `main`)
+
+## Architecture
+
+```
+src/data/go8Universities.js    Researched seed data (imported as-is, do not edit)
+src/data/go8Universities.d.ts  Types describing the seed data's shape
+src/lib/regalia.ts             Data access + colour resolution (the Supabase swap point)
+src/app/api/universities/      GET list of universities
+src/app/api/regalia/           GET resolved config ?university=<id>&level=<bachelor|phd>
+src/components/                Selector, info panel, configurator shell
+src/components/scene/          R3F mannequin model + Canvas viewer
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The UI talks to the data only through the API routes, and the API routes talk to the
+data only through `src/lib/regalia.ts` — swapping the local seed file for Supabase later
+means changing that one module.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Data accuracy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The seed data covers the eight Go8 universities (ANU, Sydney, Melbourne, UQ, UWA,
+Adelaide, Monash, UNSW), sourced from official academic dress regulations and
+established regalia suppliers. Important caveats, which the UI surfaces rather than
+hides:
 
-## Learn More
+- Several universities (Sydney, Adelaide, UNSW, and others) vary hood colour by
+  **faculty**, not just degree level. Faculty-dependent colours render as a neutral
+  grey placeholder with an explicit warning, never as a made-up colour.
+- Each university's `notes` and a link to its official academic dress page are always
+  shown in the info panel.
+- Hex values are reasonable approximations for a portfolio demo, not colour-matched
+  Pantone specifications. Nobody should order real regalia based on this app.
 
-To learn more about Next.js, take a look at the following resources:
+## Development
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+npm install
+npm run dev        # http://localhost:3000
+npm test           # run the Vitest suite once
+npm run test:watch # watch mode
+npm run build      # production build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tests
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `src/lib/regalia.test.ts` — data lookup and colour resolution, including unknown
+  university ids, invalid degree levels, and faculty-variation flagging
+- `src/app/api/*/route.test.ts` — API route status codes and payloads (200/400/404)
+- `src/components/scene/RegaliaModel.test.tsx` — the 3D scene mounts headlessly for
+  every university/level and applies the right material colours
+- `src/components/RegaliaSelector.test.tsx` — selector interaction and aria state
