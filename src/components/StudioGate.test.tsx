@@ -18,10 +18,9 @@ describe("StudioGate", () => {
       </StudioGate>,
     );
     expect(screen.getByText(/behind the velvet rope/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /create free account/i })).toHaveAttribute(
-      "href",
-      "/login?mode=signup",
-    );
+    expect(
+      screen.getByRole("link", { name: /create free account/i }).getAttribute("href"),
+    ).toMatch(/^\/login\?mode=signup&next=/);
     expect(screen.queryByText("secret studio")).not.toBeInTheDocument();
   });
 

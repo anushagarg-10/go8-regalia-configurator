@@ -2,10 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
-import { signIn, signUp } from "@/lib/auth";
-import { announceAuthChange } from "@/components/SiteNav";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState, type FormEvent } from "react";
+import { announceAuthChange, signIn, signUp } from "@/lib/auth";
 
 const PANEL_PHOTO =
   "https://images.unsplash.com/photo-1621376225372-c86f16f47a09?q=80&w=1000&auto=format&fit=crop";
@@ -13,20 +12,25 @@ const PANEL_PHOTO =
 type Mode = "signin" | "signup";
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginScreen />
+    </Suspense>
+  );
+}
+
+function LoginScreen() {
   const router = useRouter();
-  const [mode, setMode] = useState<Mode>("signin");
+  const searchParams = useSearchParams();
+  // Deep links like /login?mode=signup open on the create-account tab.
+  const [mode, setMode] = useState<Mode>(() =>
+    searchParams.get("mode") === "signup" ? "signup" : "signin",
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
-
-  // Deep links like /login?mode=signup open on the create-account tab.
-  useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("mode") === "signup") {
-      setMode("signup");
-    }
-  }, []);
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -40,7 +44,9 @@ export default function LoginPage() {
       return;
     }
     announceAuthChange();
-    router.push("/studio");
+    // Shared-look links pass their destination through ?next=.
+    const next = searchParams.get("next");
+    router.push(next && next.startsWith("/") ? next : "/studio");
   }
 
   return (

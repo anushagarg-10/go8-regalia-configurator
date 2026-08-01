@@ -31,9 +31,12 @@ function AnimatedRig({ children }: { children: ReactNode }) {
 export default function RegaliaViewer({
   view,
   mannequin = DEFAULT_MANNEQUIN,
+  onCanvasReady,
 }: {
   view: RegaliaView;
   mannequin?: MannequinConfig;
+  /** Receives the WebGL canvas element, e.g. for card exports. */
+  onCanvasReady?: (canvas: HTMLCanvasElement) => void;
 }) {
   return (
     <Canvas
@@ -42,6 +45,8 @@ export default function RegaliaViewer({
       camera={{ position: [1.7, 2.3, 5.4], fov: 38 }}
       className="touch-none"
       aria-label={`3D preview of ${view.university.shortName} ${view.degreeLevel} regalia`}
+      gl={{ preserveDrawingBuffer: true }}
+      onCreated={({ gl }) => onCanvasReady?.(gl.domElement)}
     >
       <hemisphereLight args={["#fdf6ea", "#8a7a66", 0.5]} />
       <ambientLight intensity={0.35} />

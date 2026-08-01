@@ -3,13 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getSession, signOut, type Session } from "@/lib/auth";
-
-export const AUTH_EVENT = "go8:auth-changed";
-
-export function announceAuthChange() {
-  window.dispatchEvent(new Event(AUTH_EVENT));
-}
+import { announceAuthChange, signOut } from "@/lib/auth";
+import { useSession } from "@/lib/useSession";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -20,20 +15,9 @@ const NAV_LINKS = [
 
 export default function SiteNav({ variant = "solid" }: { variant?: "solid" | "overlay" }) {
   const pathname = usePathname();
-  const [session, setSession] = useState<Session | null>(null);
+  const { session } = useSession();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const sync = () => setSession(getSession());
-    sync();
-    window.addEventListener(AUTH_EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(AUTH_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, []);
 
   useEffect(() => {
     if (variant !== "overlay") return;
@@ -42,10 +26,6 @@ export default function SiteNav({ variant = "solid" }: { variant?: "solid" | "ov
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [variant]);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
 
   // Over the photo hero the nav floats transparent with light text,
   // then solidifies to cream once the page scrolls (or the menu opens).

@@ -14,6 +14,29 @@ const USERS_KEY = "go8.users";
 const SESSION_KEY = "go8.session";
 const LOOKS_PREFIX = "go8.looks:";
 
+/** Fired on window whenever the session changes, so UI can re-sync. */
+export const AUTH_EVENT = "go8:auth-changed";
+
+export function announceAuthChange(): void {
+  window.dispatchEvent(new Event(AUTH_EVENT));
+}
+
+/** Subscribe to session changes (this tab and others). For useSyncExternalStore. */
+export function subscribeToAuth(callback: () => void): () => void {
+  window.addEventListener(AUTH_EVENT, callback);
+  window.addEventListener("storage", callback);
+  return () => {
+    window.removeEventListener(AUTH_EVENT, callback);
+    window.removeEventListener("storage", callback);
+  };
+}
+
+/** Raw session JSON; referentially stable between changes for snapshotting. */
+export function getSessionRaw(): string | null {
+  if (!storageAvailable()) return null;
+  return window.localStorage.getItem(SESSION_KEY);
+}
+
 export interface DemoUser {
   email: string;
   name: string;

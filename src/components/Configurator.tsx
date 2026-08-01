@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import RegaliaSelector from "@/components/RegaliaSelector";
 import RegaliaInfoPanel from "@/components/RegaliaInfoPanel";
 import MannequinSelector from "@/components/MannequinSelector";
-import { AUTH_EVENT } from "@/components/SiteNav";
-import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
+import { AUTH_EVENT } from "@/lib/auth";
+import { type MannequinConfig } from "@/lib/mannequin";
+import { buildLookQuery, parseLookParams } from "@/lib/lookParams";
+import { composeLookCard, downloadBlob } from "@/lib/lookCard";
 import {
   getSession,
   listLooks,
@@ -32,18 +34,64 @@ function ViewerPlaceholder({ message }: { message: string }) {
 }
 
 export default function Configurator() {
+  // Mounted client-side only (behind StudioGate), so the URL is readable
+  // for shared-look deep links like /studio?uni=uq&level=masters.
+  const initialLook = useMemo(
+    () => parseLookParams(typeof window === "undefined" ? "" : window.location.search),
+    [],
+  );
+
   const [universities, setUniversities] = useState<UniversitySummary[]>([]);
-  const [universityId, setUniversityId] = useState("anu");
-  const [level, setLevel] = useState<DegreeLevel>("bachelor");
-  const [facultyId, setFacultyId] = useState<string | null>(null);
+  const [universityId, setUniversityId] = useState(initialLook.universityId);
+  const [level, setLevel] = useState<DegreeLevel>(initialLook.level);
+  const [facultyId, setFacultyId] = useState<string | null>(initialLook.facultyId);
   const [view, setView] = useState<RegaliaView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [looks, setLooks] = useState<SavedLook[]>([]);
-  const [mannequin, setMannequin] = useState<MannequinConfig>(DEFAULT_MANNEQUIN);
+  const [mannequin, setMannequin] = useState<MannequinConfig>(initialLook.mannequin);
+  const [toast, setToast] = useState<string | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const toastTimer = useRef<number | undefined>(undefined);
   const [confetti, setConfetti] = useState<
     { id: number; x: number; y: number; r: number; color: string }[]
   >([]);
+
+  // Keep the URL in sync so the current look is always shareable.
+  useEffect(() => {
+    const query = buildLookQuery({ universityId, level, facultyId, mannequin });
+    window.history.replaceState(null, "", `${window.location.pathname}?${query}`);
+  }, [universityId, level, facultyId, mannequin]);
+
+  function showToast(message: string) {
+    window.clearTimeout(toastTimer.current);
+    setToast(message);
+    toastTimer.current = window.setTimeout(() => setToast(null), 2200);
+  }
+
+  async function handleShare() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      showToast("Link copied. Send it to the group chat");
+    } catch {
+      showToast("Couldn't copy the link");
+    }
+  }
+
+  async function handleDownloadCard() {
+    if (!canvasRef.current || !view) return;
+    const blob = await composeLookCard(canvasRef.current, {
+      universityName: view.university.name,
+      levelLabel: DEGREE_LEVEL_LABELS[view.degreeLevel],
+      facultyLabel: view.selectedFaculty?.label,
+    });
+    if (!blob) {
+      showToast("Couldn't render the card");
+      return;
+    }
+    downloadBlob(blob, `grad-choice-${universityId}-${level}.png`);
+    showToast("Card saved to your downloads");
+  }
 
   useEffect(() => {
     const sync = () => {
@@ -140,7 +188,11 @@ export default function Configurator() {
           className="relative h-[48dvh] min-h-[380px] shrink-0 bg-gradient-to-b from-cream via-cream-deep to-[#d8cbb6] lg:h-auto lg:min-h-[600px] lg:flex-1"
         >
           {view ? (
-            <RegaliaViewer view={view} mannequin={mannequin} />
+            <RegaliaViewer
+              view={view}
+              mannequin={mannequin}
+              onCanvasReady={(canvas) => (canvasRef.current = canvas)}
+            />
           ) : (
             <ViewerPlaceholder message="Dressing the mannequin…" />
           )}
@@ -150,6 +202,32 @@ export default function Configurator() {
           {view && (
             <p className="pointer-events-none absolute left-4 top-4 rounded-full bg-white/70 px-3 py-1.5 font-display text-xs font-bold text-maroon backdrop-blur">
               {view.university.shortName} · {DEGREE_LEVEL_LABELS[view.degreeLevel]}
+            </p>
+          )}
+          {view && (
+            <div className="absolute right-4 top-4 flex gap-2">
+              <button
+                type="button"
+                onClick={handleShare}
+                className="rounded-full bg-white/80 px-3.5 py-1.5 text-xs font-semibold text-maroon-deep shadow-sm backdrop-blur transition-transform hover:scale-105"
+              >
+                Share link
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadCard}
+                className="rounded-full bg-maroon/90 px-3.5 py-1.5 text-xs font-semibold text-cream shadow-sm backdrop-blur transition-transform hover:scale-105"
+              >
+                Save card ↓
+              </button>
+            </div>
+          )}
+          {toast && (
+            <p
+              role="status"
+              className="absolute left-1/2 top-14 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/80 px-4 py-2 text-xs font-semibold text-cream shadow-lg backdrop-blur"
+            >
+              {toast}
             </p>
           )}
         </section>

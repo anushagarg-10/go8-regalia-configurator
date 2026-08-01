@@ -1,31 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, type ReactNode } from "react";
-import { getSession, type Session } from "@/lib/auth";
-import { AUTH_EVENT } from "@/components/SiteNav";
+import { usePathname } from "next/navigation";
+import type { ReactNode } from "react";
+import { useSession } from "@/lib/useSession";
 
 /**
  * Renders children only for signed-in users; otherwise shows an elegant
- * members-only prompt. Session state is read client-side after mount.
+ * members-only prompt. Session state comes from useSession, which stays
+ * signed-out until hydration completes.
  */
 export default function StudioGate({ children }: { children: ReactNode }) {
-  const [ready, setReady] = useState(false);
-  const [session, setSession] = useState<Session | null>(null);
+  const pathname = usePathname();
+  const { session, hydrated } = useSession();
 
-  useEffect(() => {
-    const sync = () => setSession(getSession());
-    sync();
-    setReady(true);
-    window.addEventListener(AUTH_EVENT, sync);
-    window.addEventListener("storage", sync);
-    return () => {
-      window.removeEventListener(AUTH_EVENT, sync);
-      window.removeEventListener("storage", sync);
-    };
-  }, []);
-
-  if (!ready) {
+  if (!hydrated) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center text-sm text-ink-soft">
         Unlocking the studio…
@@ -34,6 +23,8 @@ export default function StudioGate({ children }: { children: ReactNode }) {
   }
 
   if (!session) {
+    // Preserve the full URL (including any shared-look params) through login.
+    const next = encodeURIComponent(`${pathname}${window.location.search}`);
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center sm:py-28">
         <p className="font-script text-5xl text-maroon">members only</p>
@@ -46,13 +37,13 @@ export default function StudioGate({ children }: { children: ReactNode }) {
         </p>
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
-            href="/login?mode=signup"
+            href={`/login?mode=signup&next=${next}`}
             className="btn-shine rounded-full bg-maroon px-6 py-3 text-sm font-semibold text-cream shadow-lg shadow-maroon/25 transition-transform hover:scale-105"
           >
             Create free account
           </Link>
           <Link
-            href="/login"
+            href={`/login?next=${next}`}
             className="rounded-full border border-ink/15 bg-white px-6 py-3 text-sm font-semibold text-ink transition-all hover:scale-105 hover:border-maroon hover:text-maroon"
           >
             Sign in
