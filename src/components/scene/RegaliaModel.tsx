@@ -19,11 +19,8 @@ import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
  * under @react-three/test-renderer.
  */
 
-const PLINTH_COLOR = "#e9e1d1";
+const BASE_PLATE_COLOR = "#a9a9af";
 const DEFAULT_TASSEL = "#2e2a2a";
-const HAIR_COLOR = "#241b16";
-const TROUSER_COLOR = "#3a3438";
-const SHOE_COLOR = "#2a2422";
 
 function FabricMaterial({ color }: { color: string }) {
   return (
@@ -53,12 +50,17 @@ function SilkMaterial({ color }: { color: string }) {
   );
 }
 
-function SkinMaterial({ tone }: { tone: string }) {
-  return <meshStandardMaterial color={tone} roughness={0.55} metalness={0} />;
-}
-
-function HairMaterial() {
-  return <meshStandardMaterial color={HAIR_COLOR} roughness={0.85} metalness={0} />;
+/** Satin boutique-mannequin surface: smooth, softly specular, featureless. */
+function FinishMaterial({ finish }: { finish: string }) {
+  return (
+    <meshPhysicalMaterial
+      color={finish}
+      roughness={0.42}
+      metalness={0}
+      clearcoat={0.25}
+      clearcoatRoughness={0.5}
+    />
+  );
 }
 
 /** Lathe profile of the gown with a radial ripple so the skirt reads as pleated drape. */
@@ -135,75 +137,74 @@ function useTasselGeometry(kind: "trencher" | "bonnet") {
   }, [kind]);
 }
 
-function Hair({ build }: { build: MannequinConfig["build"] }) {
-  if (build === "female") {
-    return (
-      <group name="hair">
-        {/* swept-back hair cap, face left open at the front */}
-        <mesh name="hair-cap" position={[0, 3.12, -0.06]} scale={[1.04, 1.08, 1]} castShadow>
-          <sphereGeometry args={[0.27, 28, 28]} />
-          <HairMaterial />
-        </mesh>
-        {/* low bun */}
-        <mesh name="hair-bun" position={[0, 3.0, -0.3]} castShadow>
-          <sphereGeometry args={[0.11, 18, 18]} />
-          <HairMaterial />
-        </mesh>
-      </group>
-    );
-  }
-  return (
-    <group name="hair">
-      {/* short crop, higher hairline */}
-      <mesh name="hair-crop" position={[0, 3.16, -0.045]} scale={[1.03, 0.92, 0.98]} castShadow>
-        <sphereGeometry args={[0.268, 28, 28]} />
-        <HairMaterial />
-      </mesh>
-    </group>
-  );
+/** Sculpted calf-to-ankle profile, slimmer for the women's build. */
+function useCalfGeometry(female: boolean) {
+  return useMemo(() => {
+    const s = female ? 1 : 1.25;
+    const profile = [
+      new Vector2(0.028 * s, 0),
+      new Vector2(0.035 * s, 0.08),
+      new Vector2(0.052 * s, 0.28),
+      new Vector2(0.068 * s, 0.46),
+      new Vector2(0.058 * s, 0.66),
+      new Vector2(0.052 * s, 0.8),
+    ];
+    return new LatheGeometry(profile, 32);
+  }, [female]);
 }
 
 function Mannequin({ config }: { config: MannequinConfig }) {
   const female = config.build === "female";
-  const tone = config.skinTone;
-  const legRadius: [number, number] = female ? [0.06, 0.075] : [0.075, 0.09];
-  const shoeSize: [number, number, number] = female ? [0.13, 0.07, 0.34] : [0.16, 0.09, 0.4];
+  const finish = config.finish;
+  const calfGeometry = useCalfGeometry(female);
 
   return (
     <group name="mannequin">
-      {/* head */}
-      <mesh name="head" position={[0, 3.08, 0]} scale={[1, 1.16, 1.02]} castShadow>
-        <sphereGeometry args={[0.26, 32, 32]} />
-        <SkinMaterial tone={tone} />
+      {/* featureless egg head */}
+      <mesh name="head" position={[0, 3.12, 0]} scale={[0.88, 1.28, 0.95]} castShadow>
+        <sphereGeometry args={[0.22, 48, 48]} />
+        <FinishMaterial finish={finish} />
       </mesh>
-      <Hair build={config.build} />
-      {/* neck */}
-      <mesh position={[0, 2.82, 0]} castShadow>
-        <cylinderGeometry args={female ? [0.075, 0.095, 0.26, 20] : [0.09, 0.115, 0.26, 20]} />
-        <SkinMaterial tone={tone} />
+      {/* long slender neck */}
+      <mesh position={[0, 2.84, 0]} castShadow>
+        <cylinderGeometry args={female ? [0.05, 0.068, 0.38, 24] : [0.062, 0.082, 0.36, 24]} />
+        <FinishMaterial finish={finish} />
       </mesh>
-      {/* chest, visible at the gown's neckline */}
-      <mesh position={[0, 2.6, 0]}>
-        <cylinderGeometry args={female ? [0.22, 0.26, 0.45, 24] : [0.25, 0.29, 0.45, 24]} />
-        <SkinMaterial tone={tone} />
+      {/* collarbone slope at the neckline */}
+      <mesh position={[0, 2.62, 0]} scale={[1, 0.55, 0.85]}>
+        <sphereGeometry args={[female ? 0.24 : 0.28, 32, 32]} />
+        <FinishMaterial finish={finish} />
       </mesh>
-      {/* legs */}
+      {/* sculpted lower legs + feet */}
       {[-1, 1].map((side) => (
-        <group key={side}>
-          <mesh position={[side * 0.15, 0.35, 0]} castShadow>
-            <cylinderGeometry args={[legRadius[0], legRadius[1], 0.75, 16]} />
-            <meshStandardMaterial color={TROUSER_COLOR} roughness={0.8} />
+        <group key={side} position={[side * 0.13, 0, 0]}>
+          <mesh geometry={calfGeometry} castShadow>
+            <FinishMaterial finish={finish} />
           </mesh>
-          <mesh position={[side * 0.15, 0.05, 0.07]} castShadow>
-            <boxGeometry args={shoeSize} />
-            <meshStandardMaterial color={SHOE_COLOR} roughness={0.4} />
-          </mesh>
+          {female ? (
+            <group name={side === 1 ? "foot-heeled" : undefined}>
+              {/* pointed foot poised on a slim heel */}
+              <mesh position={[0, 0.075, 0.075]} rotation={[-0.32, 0, 0]} castShadow>
+                <boxGeometry args={[0.068, 0.04, 0.26]} />
+                <FinishMaterial finish={finish} />
+              </mesh>
+              <mesh position={[0, 0.035, -0.03]}>
+                <cylinderGeometry args={[0.014, 0.018, 0.07, 10]} />
+                <FinishMaterial finish={finish} />
+              </mesh>
+            </group>
+          ) : (
+            <mesh name={side === 1 ? "foot-flat" : undefined} position={[0, 0.04, 0.07]} castShadow>
+              <boxGeometry args={[0.095, 0.055, 0.32]} />
+              <FinishMaterial finish={finish} />
+            </mesh>
+          )}
         </group>
       ))}
-      {/* plinth */}
-      <mesh name="stand" position={[0, -0.05, 0]} receiveShadow>
-        <cylinderGeometry args={[1.28, 1.36, 0.12, 64]} />
-        <meshPhysicalMaterial color={PLINTH_COLOR} roughness={0.32} clearcoat={0.35} clearcoatRoughness={0.3} />
+      {/* brushed-steel base plate */}
+      <mesh name="stand" position={[0, -0.02, 0]} receiveShadow>
+        <boxGeometry args={[1.5, 0.05, 1.5]} />
+        <meshStandardMaterial color={BASE_PLATE_COLOR} metalness={0.85} roughness={0.28} />
       </mesh>
     </group>
   );
@@ -245,14 +246,14 @@ function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConf
               <SilkMaterial color={facingHex} />
             </mesh>
           )}
-          {/* wrist + hand at the sleeve opening */}
+          {/* slender wrist + elongated hand at the sleeve opening */}
           <mesh position={[0, -0.6, 0.02]}>
-            <cylinderGeometry args={[0.045, 0.055, 0.3, 12]} />
-            <SkinMaterial tone={mannequin.skinTone} />
+            <cylinderGeometry args={[0.032, 0.042, 0.28, 16]} />
+            <FinishMaterial finish={mannequin.finish} />
           </mesh>
-          <mesh position={[0, -0.76, 0.04]} castShadow>
-            <sphereGeometry args={[0.08, 16, 16]} />
-            <SkinMaterial tone={mannequin.skinTone} />
+          <mesh position={[0, -0.78, 0.03]} scale={[0.62, 1.5, 0.45]} rotation={[0.12, 0, 0]} castShadow>
+            <sphereGeometry args={[0.085, 20, 20]} />
+            <FinishMaterial finish={mannequin.finish} />
           </mesh>
         </group>
       ))}

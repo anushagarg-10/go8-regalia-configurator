@@ -1,14 +1,16 @@
 import { getRegaliaView, isDegreeLevel, DEGREE_LEVELS } from "@/lib/regalia";
 
 /**
- * GET /api/regalia?university=<id>&level=<bachelor|phd>
+ * GET /api/regalia?university=<id>&level=<bachelor|masters|phd>&faculty=<id?>
  * Returns the fully resolved regalia configuration (colours as hex) for one
- * university and degree level.
+ * university and degree level; an optional faculty applies its researched
+ * colour to the hood's varying slot. Unknown faculty ids are ignored.
  */
 export function GET(request: Request): Response {
   const url = new URL(request.url);
   const universityId = url.searchParams.get("university");
   const level = url.searchParams.get("level");
+  const faculty = url.searchParams.get("faculty");
 
   if (!universityId || !level) {
     return Response.json(
@@ -24,7 +26,7 @@ export function GET(request: Request): Response {
     );
   }
 
-  const view = getRegaliaView(universityId, level);
+  const view = getRegaliaView(universityId, level, faculty);
   if (!view) {
     return Response.json(
       { error: `Unknown university id '${universityId}'.` },

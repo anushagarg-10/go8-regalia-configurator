@@ -1,5 +1,7 @@
 /**
- * Mannequin configuration for the 3D viewer: body build and skin tone.
+ * Mannequin configuration for the 3D viewer: body build and finish.
+ * Boutique-display style: a smooth, featureless figure in a single satin
+ * finish, studio white by default, with skin-tone finishes available.
  * Client-side presentation state only; not part of the regalia data.
  */
 
@@ -7,10 +9,11 @@ export type MannequinBuild = "female" | "male";
 
 export interface MannequinConfig {
   build: MannequinBuild;
-  skinTone: string;
+  finish: string;
 }
 
-export const SKIN_TONES: { name: string; hex: string }[] = [
+export const FINISHES: { name: string; hex: string }[] = [
+  { name: "Studio white", hex: "#f2efe9" },
   { name: "Light", hex: "#f1d3bc" },
   { name: "Medium", hex: "#cf9f7a" },
   { name: "Tan", hex: "#a9714b" },
@@ -24,5 +27,5 @@ export const MANNEQUIN_BUILDS: { id: MannequinBuild; label: string }[] = [
 
 export const DEFAULT_MANNEQUIN: MannequinConfig = {
   build: "female",
-  skinTone: SKIN_TONES[1].hex,
+  finish: FINISHES[0].hex,
 };

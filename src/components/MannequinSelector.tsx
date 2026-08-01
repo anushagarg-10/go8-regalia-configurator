@@ -1,8 +1,8 @@
 "use client";
 
 import {
+  FINISHES,
   MANNEQUIN_BUILDS,
-  SKIN_TONES,
   type MannequinConfig,
 } from "@/lib/mannequin";
 
@@ -36,22 +36,22 @@ export default function MannequinSelector({ config, onChange }: MannequinSelecto
             );
           })}
         </div>
-        <div role="group" aria-label="Skin tone" className="flex items-center gap-1.5">
-          {SKIN_TONES.map((tone) => {
-            const selected = tone.hex === config.skinTone;
+        <div role="group" aria-label="Mannequin finish" className="flex items-center gap-1.5">
+          {FINISHES.map((finish) => {
+            const selected = finish.hex === config.finish;
             return (
               <button
-                key={tone.hex}
+                key={finish.hex}
                 type="button"
-                aria-label={`${tone.name} skin tone`}
+                aria-label={`${finish.name} finish`}
                 aria-pressed={selected}
-                onClick={() => onChange({ ...config, skinTone: tone.hex })}
+                onClick={() => onChange({ ...config, finish: finish.hex })}
                 className={`h-6 w-6 rounded-full border transition-transform ${
                   selected
                     ? "scale-110 border-maroon ring-2 ring-maroon/40"
                     : "border-ink/20 hover:scale-105"
                 }`}
-                style={{ backgroundColor: tone.hex }}
+                style={{ backgroundColor: finish.hex }}
               />
             );
           })}

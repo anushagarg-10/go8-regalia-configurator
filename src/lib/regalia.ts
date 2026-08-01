@@ -5,6 +5,7 @@ import {
   type RegaliaDressConfig,
 } from "@/data/go8Universities";
 import { mastersRegalia } from "@/data/mastersRegalia";
+import { facultyColors, type FacultyColorEntry } from "@/data/facultyColors";
 
 export const DEGREE_LEVELS = ["bachelor", "masters", "phd"] as const;
 export type DegreeLevel = (typeof DEGREE_LEVELS)[number];
@@ -46,9 +47,18 @@ export interface UniversitySummary {
   officialSource: string;
 }
 
+export interface FacultyOption {
+  id: string;
+  label: string;
+}
+
 export interface RegaliaView {
   university: UniversitySummary;
   degreeLevel: DegreeLevel;
+  /** Faculties whose researched colour can fill this selection's varying slot. */
+  faculties: FacultyOption[];
+  /** Present when a faculty was chosen and its colour applied. */
+  selectedFaculty?: FacultyOption;
   gown: {
     style: string;
     color: ResolvedColor;
@@ -106,9 +116,22 @@ export function getUniversityById(id: string | null | undefined): University | u
   return universities.find((u) => u.id === normalized);
 }
 
+/** Faculties with a researched colour for this university and degree level. */
+export function listFaculties(
+  universityId: string | null | undefined,
+  level: DegreeLevel,
+): FacultyColorEntry[] {
+  const university = getUniversityById(universityId);
+  if (!university || !isDegreeLevel(level)) return [];
+  const set = facultyColors[university.id];
+  if (!set || !set.appliesTo.includes(level)) return [];
+  return set.faculties;
+}
+
 export function getRegaliaView(
   universityId: string | null | undefined,
   level: DegreeLevel,
+  facultyId?: string | null,
 ): RegaliaView | null {
   const university = getUniversityById(universityId);
   if (!university || !isDegreeLevel(level)) return null;
@@ -117,9 +140,18 @@ export function getRegaliaView(
     level === "masters" ? mastersRegalia[university.id] : university[level];
   if (!config) return null;
 
+  const faculties = listFaculties(university.id, level);
+  const faculty = facultyId ? faculties.find((f) => f.id === facultyId) : undefined;
+
   const gownColor = resolveColor(config.gownColor);
-  const hoodBase = resolveColor(config.hoodBaseColor);
-  const hoodAccent = resolveColor(config.hoodAccentColor);
+  let hoodBase = resolveColor(config.hoodBaseColor);
+  let hoodAccent = resolveColor(config.hoodAccentColor);
+  if (faculty) {
+    hoodAccent = { name: faculty.colorName, hex: faculty.hex, mapped: true };
+    if (faculty.baseHex && faculty.baseColorName) {
+      hoodBase = { name: faculty.baseColorName, hex: faculty.baseHex, mapped: true };
+    }
+  }
   const hoodBinding = config.hoodBinding ? resolveColor(config.hoodBinding) : undefined;
 
   const hasCap = config.capStyle !== "none" && config.capColor !== null;
@@ -131,6 +163,8 @@ export function getRegaliaView(
   return {
     university: toSummary(university),
     degreeLevel: level,
+    faculties: faculties.map(({ id, label }) => ({ id, label })),
+    ...(faculty ? { selectedFaculty: { id: faculty.id, label: faculty.label } } : {}),
     gown: {
       style: config.gownStyle,
       color: gownColor,

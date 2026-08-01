@@ -5,6 +5,7 @@ import {
   getRegaliaView,
   getUniversityById,
   isDegreeLevel,
+  listFaculties,
   listUniversities,
   resolveColor,
   type DegreeLevel,
@@ -130,6 +131,39 @@ describe("getRegaliaView", () => {
     expect(getRegaliaView("", "phd")).toBeNull();
     expect(getRegaliaView(null, "bachelor")).toBeNull();
     expect(getRegaliaView("anu", "diploma" as DegreeLevel)).toBeNull();
+  });
+
+  it("lists researched faculties only where colours actually vary", () => {
+    expect(listFaculties("anu", "bachelor").length).toBeGreaterThan(0);
+    expect(listFaculties("monash", "masters").length).toBeGreaterThan(0);
+    // UQ is level-based: no faculty variation at any level.
+    expect(listFaculties("uq", "bachelor")).toHaveLength(0);
+    // Sydney's degree-specific mapping is bachelor-only.
+    expect(listFaculties("usyd", "phd")).toHaveLength(0);
+    expect(listFaculties("oxford", "bachelor")).toHaveLength(0);
+  });
+
+  it("applies a chosen faculty's researched colour to the hood", () => {
+    const anu = getRegaliaView("anu", "bachelor", "systems-society");
+    expect(anu?.hood.accent).toEqual({ name: "claret", hex: "#7f1734", mapped: true });
+    expect(anu?.hasUnmappedColors).toBe(false);
+    expect(anu?.selectedFaculty?.label).toMatch(/Systems & Society/);
+
+    // UNSW ADA swaps the hood base to jet black as well as setting the lining.
+    const unsw = getRegaliaView("unsw", "bachelor", "arts-design-architecture");
+    expect(unsw?.hood.base.name).toBe("jet-black");
+    expect(unsw?.hood.accent.name).toBe("turquoise-green");
+
+    // A faculty choice also overrides representative-example colours.
+    const adelaide = getRegaliaView("adelaide", "bachelor", "business");
+    expect(adelaide?.hood.accent.name).toBe("helvetia-blue");
+  });
+
+  it("ignores unknown faculty ids and keeps the placeholder", () => {
+    const view = getRegaliaView("anu", "bachelor", "hogwarts");
+    expect(view?.selectedFaculty).toBeUndefined();
+    expect(view?.hood.accent.mapped).toBe(false);
+    expect(view?.hasUnmappedColors).toBe(true);
   });
 
   it("resolves masters regalia from the researched supplement", () => {

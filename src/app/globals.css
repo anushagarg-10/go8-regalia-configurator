@@ -53,6 +53,138 @@ body {
   background-size: 22px 22px;
 }
 
+/* ---------- Motion ---------- */
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.7s ease,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Hero entrance */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.hero-rise {
+  animation: hero-rise 0.85s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-rise-1 { animation-delay: 0.05s; }
+.hero-rise-2 { animation-delay: 0.18s; }
+.hero-rise-3 { animation-delay: 0.32s; }
+.hero-rise-4 { animation-delay: 0.46s; }
+.hero-rise-5 { animation-delay: 0.6s; }
+
+/* Gentle levitation for the hero collage */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+@keyframes sway {
+  0%, 100% { transform: rotate(-7deg) translateY(0); }
+  50% { transform: rotate(-4deg) translateY(-8px); }
+}
+.sway {
+  animation: sway 5.5s ease-in-out infinite;
+}
+@keyframes scribble-bob {
+  0%, 100% { transform: rotate(6deg) translateY(0); }
+  50% { transform: rotate(9deg) translateY(-6px); }
+}
+.scribble-bob {
+  animation: scribble-bob 4s ease-in-out infinite;
+}
+
+/* Infinite marquee ribbon */
+.marquee {
+  overflow: hidden;
+}
+.marquee-track {
+  display: flex;
+  width: max-content;
+  animation: marquee 26s linear infinite;
+}
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Button shine sweep */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+}
+.btn-shine::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  height: 100%;
+  width: 45%;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.55s ease;
+}
+.btn-shine:hover::after {
+  left: 130%;
+}
+
+/* Confetti burst (save a look) */
+@keyframes confetti-pop {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--cx), var(--cy)) rotate(var(--cr)) scale(0.6);
+  }
+}
+.confetti-piece {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 8px;
+  height: 12px;
+  pointer-events: none;
+  animation: confetti-pop 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-rise,
+  .floaty,
+  .sway,
+  .scribble-bob,
+  .marquee-track,
+  .confetti-piece {
+    animation: none;
+  }
+}
+
 /* Accordion marker styling */
 details.faq-item > summary {
   list-style: none;

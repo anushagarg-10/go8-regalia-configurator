@@ -38,6 +38,19 @@ describe("GET /api/regalia", () => {
     expect(body.error).toMatch(/required/i);
   });
 
+  it("applies the faculty parameter and ignores unknown faculties", async () => {
+    const withFaculty = GET(request({ university: "anu", level: "bachelor", faculty: "law-governance-policy" }));
+    expect(withFaculty.status).toBe(200);
+    const body = await withFaculty.json();
+    expect(body.hood.accent.name).toBe("purple");
+    expect(body.selectedFaculty.id).toBe("law-governance-policy");
+
+    const unknown = GET(request({ university: "anu", level: "bachelor", faculty: "hogwarts" }));
+    expect(unknown.status).toBe(200);
+    const unknownBody = await unknown.json();
+    expect(unknownBody.selectedFaculty).toBeUndefined();
+  });
+
   it("serves masters regalia", async () => {
     const response = GET(request({ university: "uq", level: "masters" }));
     expect(response.status).toBe(200);

@@ -35,11 +35,15 @@ export default function Configurator() {
   const [universities, setUniversities] = useState<UniversitySummary[]>([]);
   const [universityId, setUniversityId] = useState("anu");
   const [level, setLevel] = useState<DegreeLevel>("bachelor");
+  const [facultyId, setFacultyId] = useState<string | null>(null);
   const [view, setView] = useState<RegaliaView | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [looks, setLooks] = useState<SavedLook[]>([]);
   const [mannequin, setMannequin] = useState<MannequinConfig>(DEFAULT_MANNEQUIN);
+  const [confetti, setConfetti] = useState<
+    { id: number; x: number; y: number; r: number; color: string }[]
+  >([]);
 
   useEffect(() => {
     const sync = () => {
@@ -72,7 +76,8 @@ export default function Configurator() {
 
   useEffect(() => {
     let cancelled = false;
-    fetch(`/api/regalia?university=${encodeURIComponent(universityId)}&level=${level}`)
+    const facultyParam = facultyId ? `&faculty=${encodeURIComponent(facultyId)}` : "";
+    fetch(`/api/regalia?university=${encodeURIComponent(universityId)}&level=${level}${facultyParam}`)
       .then((res) => {
         if (!res.ok) throw new Error(`Failed to load regalia (${res.status})`);
         return res.json();
@@ -89,12 +94,34 @@ export default function Configurator() {
     return () => {
       cancelled = true;
     };
-  }, [universityId, level]);
+  }, [universityId, level, facultyId]);
+
+  function handleUniversityChange(id: string) {
+    setUniversityId(id);
+    setFacultyId(null);
+  }
+
+  function handleLevelChange(next: DegreeLevel) {
+    setLevel(next);
+    setFacultyId(null);
+  }
 
   function handleSaveLook() {
     if (!session || !view) return;
     const label = `${view.university.shortName} ${DEGREE_LEVEL_LABELS[view.degreeLevel]}`;
     setLooks(saveLook(session.email, { universityId, level, label }));
+    // Celebration burst over the saved-looks card.
+    const palette = ["#6d1f35", "#b98c3a", "#40b5ad", "#f6e3e0", "#c8102e"];
+    setConfetti(
+      Array.from({ length: 16 }, (_, i) => ({
+        id: Date.now() + i,
+        x: (Math.random() - 0.5) * 240,
+        y: -40 - Math.random() * 140,
+        r: (Math.random() - 0.5) * 540,
+        color: palette[i % palette.length],
+      })),
+    );
+    window.setTimeout(() => setConfetti([]), 1200);
   }
 
   function handleRemoveLook(look: SavedLook) {
@@ -143,17 +170,53 @@ export default function Configurator() {
               universities={universities}
               selectedUniversityId={universityId}
               selectedLevel={level}
-              onUniversityChange={setUniversityId}
-              onLevelChange={setLevel}
+              onUniversityChange={handleUniversityChange}
+              onLevelChange={handleLevelChange}
             />
           ) : (
             !error && <p className="text-sm text-ink-soft">Loading universities…</p>
           )}
 
+          {/* Faculty picker, shown when this selection has researched faculty colours */}
+          {view && view.faculties.length > 0 && (
+            <fieldset>
+              <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
+                Faculty / discipline
+              </legend>
+              <select
+                value={facultyId ?? ""}
+                onChange={(e) => setFacultyId(e.target.value || null)}
+                className="w-full rounded-xl border border-ink/15 bg-white px-3.5 py-2.5 text-sm font-medium text-ink outline-none transition-colors focus:border-maroon focus:ring-2 focus:ring-maroon/20"
+              >
+                <option value="">Not sure yet (neutral preview)</option>
+                {view.faculties.map((f) => (
+                  <option key={f.id} value={f.id}>
+                    {f.label}
+                  </option>
+                ))}
+              </select>
+            </fieldset>
+          )}
+
           <MannequinSelector config={mannequin} onChange={setMannequin} />
 
           {/* Saved looks */}
-          <div className="rounded-2xl border border-ink/10 bg-white p-4">
+          <div className="relative rounded-2xl border border-ink/10 bg-white p-4">
+            {confetti.map((piece) => (
+              <span
+                key={piece.id}
+                aria-hidden
+                className="confetti-piece"
+                style={
+                  {
+                    backgroundColor: piece.color,
+                    "--cx": `${piece.x}px`,
+                    "--cy": `${piece.y}px`,
+                    "--cr": `${piece.r}deg`,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
             <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
               Saved looks
             </p>

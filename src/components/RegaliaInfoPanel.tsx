@@ -33,7 +33,10 @@ export default function RegaliaInfoPanel({ view }: { view: RegaliaView }) {
         <h2 className="mt-1 font-display text-lg font-bold leading-snug text-ink">
           {view.university.name}
         </h2>
-        <p className="text-xs text-ink-soft">{view.university.location}</p>
+        <p className="text-xs text-ink-soft">
+          {view.university.location}
+          {view.selectedFaculty ? ` · ${view.selectedFaculty.label}` : ""}
+        </p>
       </div>
 
       <ul className="space-y-2">

@@ -1,10 +1,10 @@
 # Regalia Eight · Go8 Graduation Regalia Configurator
 
-Pick an Australian Group of Eight university and a degree level (Bachelor, Masters,
-or PhD), choose a mannequin build and skin tone, and preview the academic gown, hood,
-and cap in an interactive 3D studio: orbit, zoom, and rotate instead of static photos.
-Editorial landing page, graduate portal with saved looks, and a physically shaded
-cloth model, all data-driven.
+Pick an Australian Group of Eight university, a degree level (Bachelor, Masters, or
+PhD), and your faculty, then preview the academic gown, hood, and cap on a boutique
+display mannequin in an interactive 3D studio: orbit, zoom, and rotate instead of
+static photos. Editorial landing page with scroll and hero animations, graduate
+portal with saved looks, and a physically shaded cloth model, all data-driven.
 
 ## Tech stack
 
@@ -21,6 +21,7 @@ cloth model, all data-driven.
 src/data/go8Universities.js    Researched seed data (imported as-is, do not edit)
 src/data/go8Universities.d.ts  Types describing the seed data's shape
 src/data/mastersRegalia.ts     Supplemental researched masters dress data, with sources
+src/data/facultyColors.ts      Researched faculty/degree hood colours per university
 src/lib/regalia.ts             Data access + colour resolution (the Supabase swap point)
 src/lib/auth.ts                Demo auth + saved looks in localStorage (Supabase Auth swap point)
 src/app/api/universities/      GET list of universities
@@ -48,8 +49,11 @@ established regalia suppliers. Important caveats, which the UI surfaces rather t
 hides:
 
 - Several universities (Sydney, Adelaide, UNSW, and others) vary hood colour by
-  **faculty**, not just degree level. Faculty-dependent colours render as a neutral
-  grey placeholder with an explicit warning, never as a made-up colour.
+  **faculty**, not just degree level. A faculty picker offers researched colours for
+  the most common faculties per university (sourced per entry in
+  `src/data/facultyColors.ts`); without a faculty choice, the varying slot renders
+  as a neutral grey placeholder with an explicit warning, never as a made-up colour.
+  UQ has no picker because its colours are level-based by regulation.
 - Each university's `notes` and a link to its official academic dress page are always
   shown in the info panel.
 - Hex values are reasonable approximations for a portfolio demo, not colour-matched

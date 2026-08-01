@@ -49,18 +49,18 @@ describe("RegaliaModel", () => {
     expect(findByName(renderer.scene.instance, "hood-binding")).toBeDefined();
   });
 
-  it("renders build-specific hair on the mannequin", async () => {
+  it("renders build-specific mannequin bodies", async () => {
     const view = getRegaliaView("anu", "bachelor")!;
 
     const female = await ReactThreeTestRenderer.create(<RegaliaModel view={view} />);
-    expect(findByName(female.scene.instance, "hair-bun")).toBeDefined();
-    expect(findByName(female.scene.instance, "hair-crop")).toBeUndefined();
+    expect(findByName(female.scene.instance, "foot-heeled")).toBeDefined();
+    expect(findByName(female.scene.instance, "foot-flat")).toBeUndefined();
 
     const male = await ReactThreeTestRenderer.create(
-      <RegaliaModel view={view} mannequin={{ build: "male", skinTone: "#6f4a30" }} />,
+      <RegaliaModel view={view} mannequin={{ build: "male", finish: "#6f4a30" }} />,
     );
-    expect(findByName(male.scene.instance, "hair-crop")).toBeDefined();
-    expect(findByName(male.scene.instance, "hair-bun")).toBeUndefined();
+    expect(findByName(male.scene.instance, "foot-flat")).toBeDefined();
+    expect(findByName(male.scene.instance, "foot-heeled")).toBeUndefined();
   });
 
   it("renders a trencher board for trencher caps and a brim for bonnets", async () => {
