@@ -10,6 +10,8 @@ export type MannequinBuild = "female" | "male";
 export interface MannequinConfig {
   build: MannequinBuild;
   finish: string;
+  /** Colour of the outfit worn under the gown (collar + legs below the hem). */
+  outfit: string;
 }
 
 export const FINISHES: { name: string; hex: string }[] = [
@@ -20,6 +22,16 @@ export const FINISHES: { name: string; hex: string }[] = [
   { name: "Deep", hex: "#6f4a30" },
 ];
 
+export const OUTFIT_COLORS: { name: string; hex: string }[] = [
+  { name: "Charcoal", hex: "#3a3438" },
+  { name: "Black", hex: "#26262b" },
+  { name: "White", hex: "#f2f0ea" },
+  { name: "Navy", hex: "#22335c" },
+  { name: "Beige", hex: "#d9c7a7" },
+  { name: "Wine red", hex: "#a02334" },
+  { name: "Blush pink", hex: "#e5aebc" },
+];
+
 export const MANNEQUIN_BUILDS: { id: MannequinBuild; label: string }[] = [
   { id: "female", label: "Women's" },
   { id: "male", label: "Men's" },
@@ -28,4 +40,5 @@ export const MANNEQUIN_BUILDS: { id: MannequinBuild; label: string }[] = [
 export const DEFAULT_MANNEQUIN: MannequinConfig = {
   build: "female",
   finish: FINISHES[0].hex,
+  outfit: OUTFIT_COLORS[0].hex,
 };

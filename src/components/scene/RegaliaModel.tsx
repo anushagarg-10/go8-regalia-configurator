@@ -153,6 +153,12 @@ function useCalfGeometry(female: boolean) {
   }, [female]);
 }
 
+function OutfitMaterial({ color }: { color: string }) {
+  return <meshStandardMaterial color={color} roughness={0.72} metalness={0} />;
+}
+
+const SHOE_COLOR = "#2a2422";
+
 function Mannequin({ config }: { config: MannequinConfig }) {
   const female = config.build === "female";
   const finish = config.finish;
@@ -175,28 +181,33 @@ function Mannequin({ config }: { config: MannequinConfig }) {
         <sphereGeometry args={[female ? 0.24 : 0.28, 32, 32]} />
         <FinishMaterial finish={finish} />
       </mesh>
-      {/* sculpted lower legs + feet */}
+      {/* outfit collar peeking above the gown's neck opening */}
+      <mesh name="outfit-collar" position={[0, 2.93, 0]} castShadow>
+        <cylinderGeometry args={[0.1, 0.115, 0.13, 24]} />
+        <OutfitMaterial color={config.outfit} />
+      </mesh>
+      {/* lower legs in the outfit colour, visible below the hem */}
       {[-1, 1].map((side) => (
         <group key={side} position={[side * 0.13, 0, 0]}>
-          <mesh geometry={calfGeometry} castShadow>
-            <FinishMaterial finish={finish} />
+          <mesh name={side === 1 ? "outfit-leg" : undefined} geometry={calfGeometry} castShadow>
+            <OutfitMaterial color={config.outfit} />
           </mesh>
           {female ? (
             <group name={side === 1 ? "foot-heeled" : undefined}>
               {/* pointed foot poised on a slim heel */}
               <mesh position={[0, 0.075, 0.075]} rotation={[-0.32, 0, 0]} castShadow>
                 <boxGeometry args={[0.068, 0.04, 0.26]} />
-                <FinishMaterial finish={finish} />
+                <OutfitMaterial color={SHOE_COLOR} />
               </mesh>
               <mesh position={[0, 0.035, -0.03]}>
                 <cylinderGeometry args={[0.014, 0.018, 0.07, 10]} />
-                <FinishMaterial finish={finish} />
+                <OutfitMaterial color={SHOE_COLOR} />
               </mesh>
             </group>
           ) : (
             <mesh name={side === 1 ? "foot-flat" : undefined} position={[0, 0.04, 0.07]} castShadow>
               <boxGeometry args={[0.095, 0.055, 0.32]} />
-              <FinishMaterial finish={finish} />
+              <OutfitMaterial color={SHOE_COLOR} />
             </mesh>
           )}
         </group>

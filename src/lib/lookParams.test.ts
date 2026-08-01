@@ -8,10 +8,15 @@ describe("parseLookParams", () => {
       universityId: "monash",
       level: "masters",
       facultyId: "law",
-      mannequin: { build: "male", finish: FINISHES[3].hex },
+      mannequin: { build: "male", finish: FINISHES[3].hex, outfit: "#a02334" },
     };
     const query = buildLookQuery(look);
     expect(parseLookParams(query)).toEqual(look);
+  });
+
+  it("accepts custom outfit hexes and rejects malformed ones", () => {
+    expect(parseLookParams("outfit=1A2B3C").mannequin.outfit).toBe("#1a2b3c");
+    expect(parseLookParams("outfit=red").mannequin.outfit).toBe(DEFAULT_LOOK.mannequin.outfit);
   });
 
   it("omits the faculty param when none is chosen", () => {

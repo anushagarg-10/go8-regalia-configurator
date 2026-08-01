@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import MannequinSelector from "./MannequinSelector";
-import { DEFAULT_MANNEQUIN, FINISHES } from "@/lib/mannequin";
+import { DEFAULT_MANNEQUIN, FINISHES, OUTFIT_COLORS } from "@/lib/mannequin";
 
 describe("MannequinSelector", () => {
   it("renders both builds and all finishes", () => {
@@ -34,5 +34,18 @@ describe("MannequinSelector", () => {
       ...DEFAULT_MANNEQUIN,
       finish: FINISHES[4].hex,
     });
+  });
+
+  it("notifies on outfit colour changes", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(<MannequinSelector config={DEFAULT_MANNEQUIN} onChange={onChange} />);
+
+    await user.click(screen.getByRole("button", { name: "Wine red outfit" }));
+    expect(onChange).toHaveBeenCalledWith({
+      ...DEFAULT_MANNEQUIN,
+      outfit: OUTFIT_COLORS[5].hex,
+    });
+    expect(screen.getByLabelText("Custom outfit colour")).toBeInTheDocument();
   });
 });

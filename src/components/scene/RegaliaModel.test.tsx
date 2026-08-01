@@ -57,10 +57,29 @@ describe("RegaliaModel", () => {
     expect(findByName(female.scene.instance, "foot-flat")).toBeUndefined();
 
     const male = await ReactThreeTestRenderer.create(
-      <RegaliaModel view={view} mannequin={{ build: "male", finish: "#6f4a30" }} />,
+      <RegaliaModel
+        view={view}
+        mannequin={{ build: "male", finish: "#6f4a30", outfit: "#22335c" }}
+      />,
     );
     expect(findByName(male.scene.instance, "foot-flat")).toBeDefined();
     expect(findByName(male.scene.instance, "foot-heeled")).toBeUndefined();
+  });
+
+  it("dresses the collar and legs in the chosen outfit colour", async () => {
+    const view = getRegaliaView("anu", "bachelor")!;
+    const renderer = await ReactThreeTestRenderer.create(
+      <RegaliaModel
+        view={view}
+        mannequin={{ build: "female", finish: "#f2efe9", outfit: "#a02334" }}
+      />,
+    );
+    const collar = findByName(renderer.scene.instance, "outfit-collar") as Mesh;
+    const collarMaterial = collar.material as MeshStandardMaterial;
+    expect(`#${collarMaterial.color.getHexString()}`).toBe("#a02334");
+    const leg = findByName(renderer.scene.instance, "outfit-leg") as Mesh;
+    const legMaterial = leg.material as MeshStandardMaterial;
+    expect(`#${legMaterial.color.getHexString()}`).toBe("#a02334");
   });
 
   it("renders a trencher board for trencher caps and a brim for bonnets", async () => {

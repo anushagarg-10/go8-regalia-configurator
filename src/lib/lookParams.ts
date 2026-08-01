@@ -48,7 +48,12 @@ export function parseLookParams(search: string): LookState {
   const finish =
     FINISHES.find((f) => finishSlug(f.name) === finishParam)?.hex ?? DEFAULT_MANNEQUIN.finish;
 
-  return { universityId, level, facultyId, mannequin: { build, finish } };
+  const outfitParam = params.get("outfit");
+  const outfit = /^[0-9a-fA-F]{6}$/.test(outfitParam ?? "")
+    ? `#${outfitParam!.toLowerCase()}`
+    : DEFAULT_MANNEQUIN.outfit;
+
+  return { universityId, level, facultyId, mannequin: { build, finish, outfit } };
 }
 
 export function buildLookQuery(state: LookState): string {
@@ -59,5 +64,6 @@ export function buildLookQuery(state: LookState): string {
   params.set("build", state.mannequin.build);
   const finish = FINISHES.find((f) => f.hex === state.mannequin.finish);
   if (finish) params.set("finish", finishSlug(finish.name));
+  params.set("outfit", state.mannequin.outfit.replace("#", ""));
   return params.toString();
 }
