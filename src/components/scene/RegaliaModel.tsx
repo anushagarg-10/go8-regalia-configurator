@@ -161,17 +161,17 @@ function Mannequin({ config }: { config: MannequinConfig }) {
   return (
     <group name="mannequin">
       {/* featureless egg head */}
-      <mesh name="head" position={[0, 3.12, 0]} scale={[0.88, 1.28, 0.95]} castShadow>
-        <sphereGeometry args={[0.22, 48, 48]} />
+      <mesh name="head" position={[0, 3.14, 0]} scale={[0.9, 1.24, 0.97]} castShadow>
+        <sphereGeometry args={[0.23, 48, 48]} />
         <FinishMaterial finish={finish} />
       </mesh>
-      {/* long slender neck */}
-      <mesh position={[0, 2.84, 0]} castShadow>
-        <cylinderGeometry args={female ? [0.05, 0.068, 0.38, 24] : [0.062, 0.082, 0.36, 24]} />
+      {/* slender neck */}
+      <mesh position={[0, 2.9, 0]} castShadow>
+        <cylinderGeometry args={female ? [0.052, 0.068, 0.34, 24] : [0.064, 0.084, 0.32, 24]} />
         <FinishMaterial finish={finish} />
       </mesh>
       {/* collarbone slope at the neckline */}
-      <mesh position={[0, 2.62, 0]} scale={[1, 0.55, 0.85]}>
+      <mesh position={[0, 2.66, 0]} scale={[1, 0.55, 0.85]}>
         <sphereGeometry args={[female ? 0.24 : 0.28, 32, 32]} />
         <FinishMaterial finish={finish} />
       </mesh>
@@ -214,13 +214,13 @@ function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConf
   const gownGeometry = usePleatedGownGeometry();
   const gownHex = view.gown.color.hex;
   const isPhd = view.degreeLevel === "phd";
-  const yokeWidth = mannequin.build === "female" ? 1.1 : 1.24;
+  const yokeWidth = mannequin.build === "female" ? 1.04 : 1.16;
   // Doctoral gowns with facings/trim get silk front facings; the seed data
   // carries the facing colour via capCordColor for the styles that have one,
   // falling back to the hood accent.
   const showFacings = isPhd && /faced|trimmed/.test(view.gown.style);
   const facingHex = view.cap?.cord?.hex ?? view.hood.accent.hex;
-  const sleeveBottom = isPhd ? 0.3 : 0.24;
+  const sleeveBottom = isPhd ? 0.27 : 0.2;
 
   return (
     <group name="gown">
@@ -228,31 +228,31 @@ function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConf
         <FabricMaterial color={gownHex} />
       </mesh>
       {/* shoulder yoke */}
-      <mesh position={[0, 2.8, 0]} scale={[yokeWidth, 0.5, 0.85]} castShadow>
-        <sphereGeometry args={[0.42, 28, 28]} />
+      <mesh position={[0, 2.76, 0]} scale={[yokeWidth, 0.45, 0.8]} castShadow>
+        <sphereGeometry args={[0.38, 28, 28]} />
         <FabricMaterial color={gownHex} />
       </mesh>
-      {/* sleeves, hanging close to the body */}
+      {/* sleeves, joined at the shoulder and hanging near-vertical */}
       {[-1, 1].map((side) => (
-        <group key={side} position={[side * 0.5, 2.18, 0.05]} rotation={[0.06, 0, side * -0.3]}>
+        <group key={side} position={[side * 0.42, 2.26, 0.04]} rotation={[0.05, 0, side * -0.2]}>
           <mesh castShadow>
-            <cylinderGeometry args={[0.12, sleeveBottom, 1.12, 20, 1, true]} />
+            <cylinderGeometry args={[0.13, sleeveBottom, 1.08, 20, 1, true]} />
             <FabricMaterial color={gownHex} />
           </mesh>
           {/* silk cuff band on trimmed doctoral robes */}
           {showFacings && (
-            <mesh position={[0, -0.5, 0]}>
+            <mesh position={[0, -0.46, 0]}>
               <cylinderGeometry args={[sleeveBottom - 0.015, sleeveBottom + 0.01, 0.14, 20, 1, true]} />
               <SilkMaterial color={facingHex} />
             </mesh>
           )}
           {/* slender wrist + elongated hand at the sleeve opening */}
-          <mesh position={[0, -0.6, 0.02]}>
-            <cylinderGeometry args={[0.032, 0.042, 0.28, 16]} />
+          <mesh position={[0, -0.56, 0.02]}>
+            <cylinderGeometry args={[0.032, 0.042, 0.26, 16]} />
             <FinishMaterial finish={mannequin.finish} />
           </mesh>
-          <mesh position={[0, -0.78, 0.03]} scale={[0.62, 1.5, 0.45]} rotation={[0.12, 0, 0]} castShadow>
-            <sphereGeometry args={[0.085, 20, 20]} />
+          <mesh position={[0, -0.7, 0.03]} scale={[0.6, 1.45, 0.42]} rotation={[0.12, 0, 0]} castShadow>
+            <sphereGeometry args={[0.08, 20, 20]} />
             <FinishMaterial finish={mannequin.finish} />
           </mesh>
         </group>
@@ -294,12 +294,12 @@ function Hood({ view }: { view: RegaliaView }) {
         </mesh>
       )}
       {/* back drape */}
-      <mesh name="hood-drape" position={[0, 2.02, -0.52]} rotation={[2.93, 0, 0]} scale={[1, 1, 0.55]} castShadow>
-        <coneGeometry args={[0.4, 1.35, 24]} />
+      <mesh name="hood-drape" position={[0, 2.05, -0.46]} rotation={[2.95, 0, 0]} scale={[0.92, 1, 0.48]} castShadow>
+        <coneGeometry args={[0.37, 1.25, 24]} />
         <FabricMaterial color={colors.base.hex} />
       </mesh>
-      <mesh name="hood-lining" position={[0, 1.88, -0.58]} rotation={[2.93, 0, 0]} scale={[1, 1, 0.5]}>
-        <coneGeometry args={[0.27, 1, 24]} />
+      <mesh name="hood-lining" position={[0, 1.93, -0.52]} rotation={[2.95, 0, 0]} scale={[0.9, 1, 0.42]}>
+        <coneGeometry args={[0.25, 0.92, 24]} />
         <SilkMaterial color={colors.accent.hex} />
       </mesh>
     </group>

@@ -8,6 +8,7 @@ import {
   listFaculties,
   listUniversities,
   resolveColor,
+  universityLogoUrl,
   type DegreeLevel,
 } from "@/lib/regalia";
 
@@ -24,6 +25,17 @@ describe("listUniversities", () => {
       expect(u.location).toBeTruthy();
       expect(u.officialSource).toMatch(/^https:\/\//);
     }
+  });
+});
+
+describe("universityLogoUrl", () => {
+  it("builds a favicon-proxy URL from the official source domain", () => {
+    expect(universityLogoUrl("https://www.anu.edu.au")).toBe(
+      "https://icons.duckduckgo.com/ip3/anu.edu.au.ico",
+    );
+    expect(universityLogoUrl("https://www.monash.edu")).toBe(
+      "https://icons.duckduckgo.com/ip3/monash.edu.ico",
+    );
   });
 });
 

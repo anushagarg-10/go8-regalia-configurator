@@ -3,6 +3,7 @@
 import {
   DEGREE_LEVELS,
   DEGREE_LEVEL_LABELS,
+  universityLogoUrl,
   type DegreeLevel,
   type UniversitySummary,
 } from "@/lib/regalia";
@@ -37,15 +38,29 @@ export default function RegaliaSelector({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => onUniversityChange(university.id)}
-                className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
+                className={`flex items-center gap-2 rounded-xl border px-2.5 py-2.5 text-left transition-all ${
                   selected
                     ? "border-maroon bg-maroon text-cream shadow-md shadow-maroon/25"
                     : "border-ink/10 bg-white text-ink hover:-translate-y-px hover:border-maroon/40 hover:shadow-sm"
                 }`}
               >
-                <span className="block font-display text-sm font-bold">{university.shortName}</span>
-                <span className={`block text-[11px] ${selected ? "text-cream/75" : "text-ink-soft"}`}>
-                  {university.location}
+                {/* eslint-disable-next-line @next/next/no-img-element -- tiny remote favicon */}
+                <img
+                  src={universityLogoUrl(university.officialSource)}
+                  alt=""
+                  aria-hidden
+                  loading="lazy"
+                  width={22}
+                  height={22}
+                  className="h-5.5 w-5.5 shrink-0 rounded bg-white object-contain p-px"
+                />
+                <span className="min-w-0">
+                  <span className="block font-display text-sm font-bold">{university.shortName}</span>
+                  <span
+                    className={`block truncate text-[11px] ${selected ? "text-cream/75" : "text-ink-soft"}`}
+                  >
+                    {university.location}
+                  </span>
                 </span>
               </button>
             );

@@ -3,7 +3,7 @@ import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 import LaurelStat from "@/components/LaurelStat";
 import Reveal from "@/components/Reveal";
-import { listUniversities } from "@/lib/regalia";
+import { listUniversities, universityLogoUrl } from "@/lib/regalia";
 
 const HERO_BACKDROP =
   "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=2000&auto=format&fit=crop";
@@ -215,10 +215,22 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="group block rounded-2xl border border-ink/10 bg-white p-4 transition-all duration-300 hover:-translate-y-1.5 hover:rotate-1 hover:border-maroon/40 hover:shadow-xl hover:shadow-maroon/15"
                 >
-                  <p className="font-display text-lg font-bold text-ink group-hover:text-maroon">
-                    {u.shortName}
-                  </p>
-                  <p className="mt-0.5 text-xs text-ink-soft">{u.location}</p>
+                  <div className="flex items-center gap-2.5">
+                    {/* eslint-disable-next-line @next/next/no-img-element -- tiny remote favicon, no optimization needed */}
+                    <img
+                      src={universityLogoUrl(u.officialSource)}
+                      alt=""
+                      aria-hidden
+                      loading="lazy"
+                      width={28}
+                      height={28}
+                      className="h-7 w-7 rounded-md border border-ink/10 bg-white object-contain p-0.5"
+                    />
+                    <p className="font-display text-lg font-bold text-ink group-hover:text-maroon">
+                      {u.shortName}
+                    </p>
+                  </div>
+                  <p className="mt-1.5 text-xs text-ink-soft">{u.location}</p>
                   <p className="mt-3 text-[11px] font-semibold uppercase tracking-wide text-maroon/70">
                     Official dress info ↗
                   </p>
@@ -304,7 +316,8 @@ export default function Home() {
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed">
               An independent 3D preview of Group of Eight graduation dress. Built as a portfolio
-              project. Not affiliated with any university.
+              project. Not affiliated with any university; university marks appear for
+              identification only.
             </p>
           </div>
           <div>

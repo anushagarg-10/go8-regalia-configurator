@@ -96,6 +96,16 @@ export function resolveColor(name: string | null | undefined): ResolvedColor {
   return { name, hex, mapped: true };
 }
 
+/**
+ * Official site icon for a university, served via DuckDuckGo's favicon
+ * proxy so we never bundle trademarked assets. Shown for identification
+ * only; the UI carries a non-affiliation disclaimer.
+ */
+export function universityLogoUrl(officialSource: string): string {
+  const host = new URL(officialSource).hostname.replace(/^www\./, "");
+  return `https://icons.duckduckgo.com/ip3/${host}.ico`;
+}
+
 function toSummary(university: University): UniversitySummary {
   return {
     id: university.id,
