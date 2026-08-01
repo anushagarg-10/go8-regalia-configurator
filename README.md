@@ -1,8 +1,9 @@
-# Go8 Graduation Regalia Configurator
+# Regalia Eight · Go8 Graduation Regalia Configurator
 
 Pick an Australian Group of Eight university and a degree level (Bachelor or PhD) and
-preview the academic gown, hood, and cap in an interactive 3D viewer — orbit, zoom,
-and rotate instead of static photos.
+preview the academic gown, hood, and cap in an interactive 3D studio: orbit, zoom,
+and rotate instead of static photos. Editorial landing page, graduate portal with
+saved looks, and a physically shaded cloth model, all data-driven.
 
 ## Tech stack
 
@@ -19,11 +20,19 @@ and rotate instead of static photos.
 src/data/go8Universities.js    Researched seed data (imported as-is, do not edit)
 src/data/go8Universities.d.ts  Types describing the seed data's shape
 src/lib/regalia.ts             Data access + colour resolution (the Supabase swap point)
+src/lib/auth.ts                Demo auth + saved looks in localStorage (Supabase Auth swap point)
 src/app/api/universities/      GET list of universities
 src/app/api/regalia/           GET resolved config ?university=<id>&level=<bachelor|phd>
-src/components/                Selector, info panel, configurator shell
-src/components/scene/          R3F mannequin model + Canvas viewer
+src/app/login/                 Graduate portal (sign in / create account)
+src/components/                Landing sections, selector, info panel, configurator shell
+src/components/scene/          R3F mannequin model + studio viewer
 ```
+
+The demo auth deliberately mirrors an auth-provider API surface (signUp/signIn/
+getSession/signOut plus per-user saved looks) so swapping in Supabase Auth and a
+`saved_looks` table later does not touch component code. Passwords are salted and
+SHA-256 hashed in the browser, but it is a demo, not a production credential store,
+and the UI says so.
 
 The UI talks to the data only through the API routes, and the API routes talk to the
 data only through `src/lib/regalia.ts` — swapping the local seed file for Supabase later
@@ -58,6 +67,8 @@ npm run build      # production build
 
 - `src/lib/regalia.test.ts` — data lookup and colour resolution, including unknown
   university ids, invalid degree levels, and faculty-variation flagging
+- `src/lib/auth.test.ts` — signup/signin validation, session lifecycle, password
+  hashing, and per-user saved-look dedupe/removal
 - `src/app/api/*/route.test.ts` — API route status codes and payloads (200/400/404)
 - `src/components/scene/RegaliaModel.test.tsx` — the 3D scene mounts headlessly for
   every university/level and applies the right material colours

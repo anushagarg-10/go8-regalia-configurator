@@ -25,7 +25,7 @@ export default function RegaliaSelector({
   return (
     <div className="space-y-5">
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
           University
         </legend>
         <div className="grid grid-cols-2 gap-2">
@@ -37,18 +37,14 @@ export default function RegaliaSelector({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => onUniversityChange(university.id)}
-                className={`rounded-lg border px-3 py-2 text-left transition-colors ${
+                className={`rounded-xl border px-3 py-2.5 text-left transition-all ${
                   selected
-                    ? "border-indigo-600 bg-indigo-600 text-white shadow-sm"
-                    : "border-zinc-300 bg-white text-zinc-800 hover:border-indigo-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+                    ? "border-maroon bg-maroon text-cream shadow-md shadow-maroon/25"
+                    : "border-ink/10 bg-white text-ink hover:-translate-y-px hover:border-maroon/40 hover:shadow-sm"
                 }`}
               >
-                <span className="block text-sm font-semibold">{university.shortName}</span>
-                <span
-                  className={`block text-xs ${
-                    selected ? "text-indigo-100" : "text-zinc-500 dark:text-zinc-400"
-                  }`}
-                >
+                <span className="block font-display text-sm font-bold">{university.shortName}</span>
+                <span className={`block text-[11px] ${selected ? "text-cream/75" : "text-ink-soft"}`}>
                   {university.location}
                 </span>
               </button>
@@ -58,12 +54,12 @@ export default function RegaliaSelector({
       </fieldset>
 
       <fieldset>
-        <legend className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+        <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
           Degree level
         </legend>
         <div
           role="group"
-          className="grid grid-cols-2 overflow-hidden rounded-lg border border-zinc-300 dark:border-zinc-700"
+          className="grid grid-cols-2 rounded-full border border-ink/10 bg-white p-1"
         >
           {DEGREE_LEVELS.map((level) => {
             const selected = level === selectedLevel;
@@ -73,10 +69,8 @@ export default function RegaliaSelector({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => onLevelChange(level)}
-                className={`px-3 py-2 text-sm font-semibold transition-colors ${
-                  selected
-                    ? "bg-indigo-600 text-white"
-                    : "bg-white text-zinc-700 hover:bg-indigo-50 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800"
+                className={`rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+                  selected ? "bg-maroon text-cream shadow-sm" : "text-ink-soft hover:text-maroon"
                 }`}
               >
                 {DEGREE_LEVEL_LABELS[level]}

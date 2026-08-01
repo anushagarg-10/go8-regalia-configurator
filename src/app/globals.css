@@ -1,26 +1,69 @@
 @import "tailwindcss";
 
+/*
+ * Editorial "graduation studio" palette: warm cream page, deep maroon
+ * primary, blush secondary surfaces, charcoal footer, antique gold accents.
+ * The site uses a fixed branded palette rather than following system theme.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f6f1e8;
+  --foreground: #211d19;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  --color-cream: #f6f1e8;
+  --color-cream-deep: #ece4d4;
+  --color-blush: #f6e3e0;
+  --color-blush-deep: #eed3cf;
+  --color-maroon: #6d1f35;
+  --color-maroon-deep: #521225;
+  --color-maroon-soft: #8d3a50;
+  --color-ink: #211d19;
+  --color-ink-soft: #6b6259;
+  --color-charcoal: #191512;
+  --color-gold: #b98c3a;
+  --color-gold-soft: #e5d3ac;
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-display: var(--font-playfair);
+  --font-script: var(--font-caveat);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Subtle paper grain over cream sections */
+.grain {
+  position: relative;
+}
+.grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  background-image: radial-gradient(rgba(33, 29, 25, 0.05) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+
+/* Accordion marker styling */
+details.faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.faq-item > summary::-webkit-details-marker {
+  display: none;
+}
+details.faq-item > summary .faq-marker::after {
+  content: "+";
+}
+details.faq-item[open] > summary .faq-marker::after {
+  content: "−";
 }

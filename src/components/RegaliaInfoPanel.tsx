@@ -4,15 +4,17 @@ import { DEGREE_LEVEL_LABELS, type RegaliaView, type ResolvedColor } from "@/lib
 
 function ColorSwatch({ label, color }: { label: string; color: ResolvedColor }) {
   return (
-    <li className="flex items-center gap-2">
+    <li className="flex items-center gap-2.5">
       <span
         aria-hidden
-        className="inline-block h-4 w-4 shrink-0 rounded-full border border-black/20 dark:border-white/20"
+        className="inline-block h-4.5 w-4.5 shrink-0 rounded-full border border-ink/15 shadow-inner"
         style={{ backgroundColor: color.hex }}
       />
-      <span className="text-sm text-zinc-700 dark:text-zinc-300">
-        <span className="font-medium">{label}:</span>{" "}
-        {color.mapped ? color.name.replace(/-/g, " ") : "varies (shown as placeholder)"}
+      <span className="text-sm text-ink">
+        <span className="font-semibold">{label}:</span>{" "}
+        <span className="text-ink-soft">
+          {color.mapped ? color.name.replace(/-/g, " ") : "varies (shown as placeholder)"}
+        </span>
       </span>
     </li>
   );
@@ -22,18 +24,19 @@ export default function RegaliaInfoPanel({ view }: { view: RegaliaView }) {
   return (
     <section
       aria-label="Regalia details"
-      className="space-y-4 rounded-xl border border-zinc-200 bg-white p-4 dark:border-zinc-800 dark:bg-zinc-900"
+      className="space-y-4 rounded-2xl border border-ink/10 bg-white p-5"
     >
       <div>
-        <h2 className="text-base font-semibold text-zinc-900 dark:text-zinc-50">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-maroon">
+          {DEGREE_LEVEL_LABELS[view.degreeLevel]} regalia
+        </p>
+        <h2 className="mt-1 font-display text-lg font-bold leading-snug text-ink">
           {view.university.name}
         </h2>
-        <p className="text-sm text-zinc-500 dark:text-zinc-400">
-          {DEGREE_LEVEL_LABELS[view.degreeLevel]} regalia · {view.university.location}
-        </p>
+        <p className="text-xs text-ink-soft">{view.university.location}</p>
       </div>
 
-      <ul className="space-y-1.5">
+      <ul className="space-y-2">
         <ColorSwatch label="Gown" color={view.gown.color} />
         <ColorSwatch label="Hood base" color={view.hood.base} />
         <ColorSwatch label="Hood accent" color={view.hood.accent} />
@@ -41,8 +44,9 @@ export default function RegaliaInfoPanel({ view }: { view: RegaliaView }) {
         {view.cap ? (
           <ColorSwatch label={`Cap (${view.cap.style.replace(/-/g, " ")})`} color={view.cap.color} />
         ) : (
-          <li className="text-sm text-zinc-700 dark:text-zinc-300">
-            <span className="font-medium">Cap:</span> none worn at the ceremony
+          <li className="text-sm text-ink">
+            <span className="font-semibold">Cap:</span>{" "}
+            <span className="text-ink-soft">none worn at the ceremony</span>
           </li>
         )}
         {view.cap?.cord && <ColorSwatch label="Cap cord/tassel" color={view.cap.cord} />}
@@ -51,14 +55,14 @@ export default function RegaliaInfoPanel({ view }: { view: RegaliaView }) {
       {view.hasUnmappedColors && (
         <p
           role="note"
-          className="rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900 dark:border-amber-500/40 dark:bg-amber-500/10 dark:text-amber-200"
+          className="rounded-xl border border-gold/40 bg-gold-soft/30 p-3 text-sm leading-relaxed text-ink"
         >
-          Some colours for this selection vary by faculty or discipline and are shown as a
-          neutral grey placeholder. Check the official source below for your exact colours.
+          Some colours for this selection vary by faculty or discipline and are shown as a neutral
+          grey placeholder. Check the official source below for your exact colours.
         </p>
       )}
 
-      <p className="rounded-lg bg-zinc-100 p-3 text-sm leading-relaxed text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
+      <p className="rounded-xl bg-blush/70 p-3.5 text-sm leading-relaxed text-maroon-deep">
         {view.notes}
       </p>
 
@@ -66,14 +70,14 @@ export default function RegaliaInfoPanel({ view }: { view: RegaliaView }) {
         href={view.university.officialSource}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 text-sm font-medium text-indigo-600 underline-offset-2 hover:underline dark:text-indigo-400"
+        className="inline-flex items-center gap-1 text-sm font-semibold text-maroon underline-offset-2 hover:underline"
       >
         Official academic dress information ↗
       </a>
 
-      <p className="text-xs leading-relaxed text-zinc-400 dark:text-zinc-500">
-        Colours are approximations for a portfolio demo, sourced from university regulations
-        and regalia suppliers. Always confirm with your university before ordering regalia.
+      <p className="text-[11px] leading-relaxed text-ink-soft/80">
+        Colours are approximations for a portfolio demo, sourced from university regulations and
+        regalia suppliers. Always confirm with your university before ordering regalia.
       </p>
     </section>
   );
