@@ -18,10 +18,11 @@ const NAV_LINKS = [
   { href: "/#faq", label: "FAQs" },
 ];
 
-export default function SiteNav() {
+export default function SiteNav({ variant = "solid" }: { variant?: "solid" | "overlay" }) {
   const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const sync = () => setSession(getSession());
@@ -35,8 +36,20 @@ export default function SiteNav() {
   }, []);
 
   useEffect(() => {
+    if (variant !== "overlay") return;
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [variant]);
+
+  useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
+
+  // Over the photo hero the nav floats transparent with light text,
+  // then solidifies to cream once the page scrolls (or the menu opens).
+  const transparent = variant === "overlay" && !scrolled && !menuOpen;
 
   function isActive(href: string): boolean {
     if (href === "/") return pathname === "/";
@@ -49,13 +62,23 @@ export default function SiteNav() {
   }
 
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/85 backdrop-blur-md">
+    <header
+      className={`${variant === "overlay" ? "fixed" : "sticky"} top-0 z-40 w-full border-b transition-colors duration-300 ${
+        transparent
+          ? "border-transparent bg-transparent"
+          : "border-ink/10 bg-cream/85 backdrop-blur-md"
+      }`}
+    >
       <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="flex items-baseline gap-1">
-          <span className="font-display text-xl font-bold tracking-tight text-maroon">
+          <span
+            className={`font-display text-xl font-bold tracking-tight ${transparent ? "text-cream" : "text-maroon"}`}
+          >
             Regalia
           </span>
-          <span className="font-script text-2xl leading-none text-gold">Eight</span>
+          <span className={`font-script text-2xl leading-none ${transparent ? "text-gold-soft" : "text-gold"}`}>
+            Eight
+          </span>
         </Link>
 
         {/* Desktop links */}
@@ -64,10 +87,14 @@ export default function SiteNav() {
             <Link
               key={link.href}
               href={link.href}
-              className={`relative py-1 text-sm font-medium transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:bg-maroon after:transition-all after:duration-300 hover:text-maroon ${
-                isActive(link.href)
-                  ? "text-maroon after:w-full"
-                  : "text-ink-soft after:w-0 hover:after:w-full"
+              className={`relative py-1 text-sm font-medium transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:transition-all after:duration-300 ${
+                transparent
+                  ? `after:bg-gold-soft hover:text-cream ${
+                      isActive(link.href) ? "text-cream after:w-full" : "text-cream/70 after:w-0 hover:after:w-full"
+                    }`
+                  : `after:bg-maroon hover:text-maroon ${
+                      isActive(link.href) ? "text-maroon after:w-full" : "text-ink-soft after:w-0 hover:after:w-full"
+                    }`
               }`}
             >
               {link.label}
@@ -90,7 +117,11 @@ export default function SiteNav() {
               <button
                 type="button"
                 onClick={handleSignOut}
-                className="rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-maroon hover:text-maroon"
+                className={`rounded-full border px-4 py-2 text-sm font-medium transition-colors ${
+                  transparent
+                    ? "border-cream/40 text-cream hover:border-cream hover:bg-cream/10"
+                    : "border-ink/15 text-ink-soft hover:border-maroon hover:text-maroon"
+                }`}
               >
                 Sign out
               </button>
@@ -99,13 +130,19 @@ export default function SiteNav() {
             <>
               <Link
                 href="/login"
-                className="px-2 py-2 text-sm font-semibold text-ink-soft transition-colors hover:text-maroon"
+                className={`px-2 py-2 text-sm font-semibold transition-colors ${
+                  transparent ? "text-cream/80 hover:text-cream" : "text-ink-soft hover:text-maroon"
+                }`}
               >
                 Sign in
               </Link>
               <Link
                 href="/studio"
-                className="btn-shine rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm shadow-maroon/30 transition-transform hover:scale-105"
+                className={`btn-shine rounded-full px-4 py-2 text-sm font-semibold transition-transform hover:scale-105 ${
+                  transparent
+                    ? "bg-cream text-maroon-deep shadow-lg"
+                    : "bg-maroon text-cream shadow-sm shadow-maroon/30"
+                }`}
               >
                 Open the studio
               </Link>
@@ -119,13 +156,15 @@ export default function SiteNav() {
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen((open) => !open)}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-ink/10 bg-white md:hidden"
+          className={`flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border md:hidden ${
+            transparent ? "border-cream/40 bg-cream/10" : "border-ink/10 bg-white"
+          }`}
         >
           <span
-            className={`h-0.5 w-4.5 rounded-full bg-ink transition-transform ${menuOpen ? "translate-y-1 rotate-45" : ""}`}
+            className={`h-0.5 w-4.5 rounded-full transition-transform ${transparent ? "bg-cream" : "bg-ink"} ${menuOpen ? "translate-y-1 rotate-45" : ""}`}
           />
           <span
-            className={`h-0.5 w-4.5 rounded-full bg-ink transition-transform ${menuOpen ? "-translate-y-1 -rotate-45" : ""}`}
+            className={`h-0.5 w-4.5 rounded-full transition-transform ${transparent ? "bg-cream" : "bg-ink"} ${menuOpen ? "-translate-y-1 -rotate-45" : ""}`}
           />
         </button>
       </nav>

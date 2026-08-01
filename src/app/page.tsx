@@ -52,28 +52,20 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-cream text-ink">
-      <SiteNav />
+      <SiteNav variant="overlay" />
 
-      {/* Hero */}
+      {/* Hero: full first screen; the photo stays fixed while the rest of
+          the page scrolls up over it. */}
       <section className="relative overflow-hidden bg-charcoal">
-        <Image
-          src={HERO_BACKDROP}
-          alt="Graduates throwing their caps in the air"
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover object-center"
-        />
         <div
-          className="absolute inset-0 bg-gradient-to-r from-charcoal/95 via-charcoal/75 to-maroon-deep/40"
           aria-hidden
-        />
-        <div
-          className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-charcoal/60 to-transparent"
-          aria-hidden
+          className="absolute inset-0 bg-cover bg-center bg-fixed"
+          style={{
+            backgroundImage: `linear-gradient(to right, rgba(25,21,18,0.95), rgba(25,21,18,0.72) 45%, rgba(82,18,37,0.45)), url(${HERO_BACKDROP})`,
+          }}
         />
 
-        <div className="relative mx-auto flex min-h-[560px] max-w-6xl flex-col justify-center px-4 pb-20 pt-16 sm:px-6 lg:min-h-[78vh] lg:pb-24 lg:pt-20">
+        <div className="relative mx-auto flex min-h-dvh max-w-6xl flex-col justify-center px-4 pb-24 pt-24 sm:px-6">
           <p className="hero-rise hero-rise-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold-soft">
             (01) <span className="ml-2 text-cream/60">The 3D dressing room</span>
           </p>
@@ -111,9 +103,20 @@ export default function Home() {
             <LaurelStat value="360°" label="Orbit, zoom, admire" tone="light" />
           </div>
 
-          <p className="scribble-bob absolute right-6 top-14 hidden font-script text-3xl text-gold-soft sm:block lg:right-10 lg:text-4xl">
+          <p className="scribble-bob absolute right-6 top-24 hidden font-script text-3xl text-gold-soft sm:block lg:right-10 lg:text-4xl">
             class of 2026!
           </p>
+
+          {/* Scroll cue */}
+          <Link
+            href="/#how-it-works"
+            aria-label="Scroll down to how it works"
+            className="absolute bottom-7 left-1/2 flex h-11 w-11 -translate-x-1/2 animate-bounce items-center justify-center rounded-full border border-cream/40 bg-cream/10 text-cream backdrop-blur transition-colors hover:bg-cream/25 motion-reduce:animate-none"
+          >
+            <svg viewBox="0 0 16 16" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M3 6l5 5 5-5" />
+            </svg>
+          </Link>
         </div>
 
         {/* Scrolling ribbon */}
