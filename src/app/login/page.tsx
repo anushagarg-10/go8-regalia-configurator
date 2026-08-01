@@ -56,8 +56,8 @@ export default function LoginPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-maroon-deep/70 via-maroon-deep/55 to-maroon-deep/85" aria-hidden />
         <Link href="/" className="relative z-10 flex items-baseline gap-1">
-          <span className="font-display text-xl font-bold tracking-tight text-cream">Regalia</span>
-          <span className="font-script text-2xl leading-none text-gold-soft">Eight</span>
+          <span className="font-display text-xl font-bold tracking-tight text-cream">Grad</span>
+          <span className="font-script text-2xl leading-none text-gold-soft">Choice</span>
         </Link>
 
         <div className="relative z-10 py-16 lg:py-0">

@@ -4,7 +4,7 @@ import StudioGate from "@/components/StudioGate";
 import Configurator from "@/components/Configurator";
 
 export const metadata: Metadata = {
-  title: "The Studio · Regalia Eight",
+  title: "The Studio · Grad Choice",
   description:
     "Dress a 3D mannequin in your Group of Eight graduation regalia: university, degree level, faculty colours, and saved looks.",
 };

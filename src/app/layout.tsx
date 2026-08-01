@@ -23,7 +23,7 @@ const caveat = Caveat({
 });
 
 export const metadata: Metadata = {
-  title: "Regalia Eight · Go8 Graduation Regalia in 3D",
+  title: "Grad Choice · Go8 Graduation Regalia in 3D",
   description:
     "Preview Australian Group of Eight graduation gowns, hoods, and caps in an interactive 3D studio. Eight universities, every colour sourced from official academic dress regulations.",
 };

@@ -311,8 +311,8 @@ export default function Home() {
         <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <p className="flex items-baseline gap-1">
-              <span className="font-display text-xl font-bold text-cream">Regalia</span>
-              <span className="font-script text-2xl leading-none text-gold-soft">Eight</span>
+              <span className="font-display text-xl font-bold text-cream">Grad</span>
+              <span className="font-script text-2xl leading-none text-gold-soft">Choice</span>
             </p>
             <p className="mt-3 max-w-xs text-sm leading-relaxed">
               An independent 3D preview of Group of Eight graduation dress. Built as a portfolio
@@ -350,7 +350,7 @@ export default function Home() {
           </div>
         </div>
         <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
-          © Regalia Eight. Colours are approximations; always confirm with your university.
+          © Grad Choice. Colours are approximations; always confirm with your university.
           Photography via Unsplash.
         </div>
       </footer>

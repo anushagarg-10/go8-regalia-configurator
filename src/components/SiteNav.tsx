@@ -74,10 +74,10 @@ export default function SiteNav({ variant = "solid" }: { variant?: "solid" | "ov
           <span
             className={`font-display text-xl font-bold tracking-tight ${transparent ? "text-cream" : "text-maroon"}`}
           >
-            Regalia
+            Grad
           </span>
           <span className={`font-script text-2xl leading-none ${transparent ? "text-gold-soft" : "text-gold"}`}>
-            Eight
+            Choice
           </span>
         </Link>
 

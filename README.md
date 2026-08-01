@@ -1,4 +1,4 @@
-# Regalia Eight · Go8 Graduation Regalia Configurator
+# Grad Choice · Go8 Graduation Regalia Configurator
 
 Pick an Australian Group of Eight university, a degree level (Bachelor, Masters, or
 PhD), and your faculty, then preview the academic gown, hood, and cap on a boutique
