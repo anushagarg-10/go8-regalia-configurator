@@ -7,6 +7,7 @@ import {
   Vector3,
 } from "three";
 import type { RegaliaView } from "@/lib/regalia";
+import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
 
 /**
  * Stylized boutique-mannequin wearing gown, hood, and cap.
@@ -18,9 +19,11 @@ import type { RegaliaView } from "@/lib/regalia";
  * under @react-three/test-renderer.
  */
 
-const MANNEQUIN_COLOR = "#2b2730";
 const PLINTH_COLOR = "#e9e1d1";
 const DEFAULT_TASSEL = "#2e2a2a";
+const HAIR_COLOR = "#241b16";
+const TROUSER_COLOR = "#3a3438";
+const SHOE_COLOR = "#2a2422";
 
 function FabricMaterial({ color }: { color: string }) {
   return (
@@ -50,8 +53,12 @@ function SilkMaterial({ color }: { color: string }) {
   );
 }
 
-function MannequinMaterial() {
-  return <meshStandardMaterial color={MANNEQUIN_COLOR} roughness={0.62} metalness={0.08} />;
+function SkinMaterial({ tone }: { tone: string }) {
+  return <meshStandardMaterial color={tone} roughness={0.55} metalness={0} />;
+}
+
+function HairMaterial() {
+  return <meshStandardMaterial color={HAIR_COLOR} roughness={0.85} metalness={0} />;
 }
 
 /** Lathe profile of the gown with a radial ripple so the skirt reads as pleated drape. */
@@ -128,33 +135,71 @@ function useTasselGeometry(kind: "trencher" | "bonnet") {
   }, [kind]);
 }
 
-function Mannequin() {
+function Hair({ build }: { build: MannequinConfig["build"] }) {
+  if (build === "female") {
+    return (
+      <group name="hair">
+        {/* swept-back hair cap, face left open at the front */}
+        <mesh name="hair-cap" position={[0, 3.12, -0.06]} scale={[1.04, 1.08, 1]} castShadow>
+          <sphereGeometry args={[0.27, 28, 28]} />
+          <HairMaterial />
+        </mesh>
+        {/* low bun */}
+        <mesh name="hair-bun" position={[0, 3.0, -0.3]} castShadow>
+          <sphereGeometry args={[0.11, 18, 18]} />
+          <HairMaterial />
+        </mesh>
+      </group>
+    );
+  }
+  return (
+    <group name="hair">
+      {/* short crop, higher hairline */}
+      <mesh name="hair-crop" position={[0, 3.16, -0.045]} scale={[1.03, 0.92, 0.98]} castShadow>
+        <sphereGeometry args={[0.268, 28, 28]} />
+        <HairMaterial />
+      </mesh>
+    </group>
+  );
+}
+
+function Mannequin({ config }: { config: MannequinConfig }) {
+  const female = config.build === "female";
+  const tone = config.skinTone;
+  const legRadius: [number, number] = female ? [0.06, 0.075] : [0.075, 0.09];
+  const shoeSize: [number, number, number] = female ? [0.13, 0.07, 0.34] : [0.16, 0.09, 0.4];
+
   return (
     <group name="mannequin">
       {/* head */}
       <mesh name="head" position={[0, 3.08, 0]} scale={[1, 1.16, 1.02]} castShadow>
         <sphereGeometry args={[0.26, 32, 32]} />
-        <MannequinMaterial />
+        <SkinMaterial tone={tone} />
       </mesh>
+      <Hair build={config.build} />
       {/* neck */}
       <mesh position={[0, 2.82, 0]} castShadow>
-        <cylinderGeometry args={[0.085, 0.11, 0.26, 20]} />
-        <MannequinMaterial />
+        <cylinderGeometry args={female ? [0.075, 0.095, 0.26, 20] : [0.09, 0.115, 0.26, 20]} />
+        <SkinMaterial tone={tone} />
       </mesh>
       {/* chest, visible at the gown's neckline */}
       <mesh position={[0, 2.6, 0]}>
-        <cylinderGeometry args={[0.24, 0.28, 0.45, 24]} />
-        <MannequinMaterial />
+        <cylinderGeometry args={female ? [0.22, 0.26, 0.45, 24] : [0.25, 0.29, 0.45, 24]} />
+        <SkinMaterial tone={tone} />
       </mesh>
       {/* legs */}
-      <mesh position={[-0.15, 0.35, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.085, 0.75, 16]} />
-        <MannequinMaterial />
-      </mesh>
-      <mesh position={[0.15, 0.35, 0]} castShadow>
-        <cylinderGeometry args={[0.07, 0.085, 0.75, 16]} />
-        <MannequinMaterial />
-      </mesh>
+      {[-1, 1].map((side) => (
+        <group key={side}>
+          <mesh position={[side * 0.15, 0.35, 0]} castShadow>
+            <cylinderGeometry args={[legRadius[0], legRadius[1], 0.75, 16]} />
+            <meshStandardMaterial color={TROUSER_COLOR} roughness={0.8} />
+          </mesh>
+          <mesh position={[side * 0.15, 0.05, 0.07]} castShadow>
+            <boxGeometry args={shoeSize} />
+            <meshStandardMaterial color={SHOE_COLOR} roughness={0.4} />
+          </mesh>
+        </group>
+      ))}
       {/* plinth */}
       <mesh name="stand" position={[0, -0.05, 0]} receiveShadow>
         <cylinderGeometry args={[1.28, 1.36, 0.12, 64]} />
@@ -164,10 +209,11 @@ function Mannequin() {
   );
 }
 
-function Gown({ view }: { view: RegaliaView }) {
+function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConfig }) {
   const gownGeometry = usePleatedGownGeometry();
   const gownHex = view.gown.color.hex;
   const isPhd = view.degreeLevel === "phd";
+  const yokeWidth = mannequin.build === "female" ? 1.1 : 1.24;
   // Doctoral gowns with facings/trim get silk front facings; the seed data
   // carries the facing colour via capCordColor for the styles that have one,
   // falling back to the hood accent.
@@ -181,7 +227,7 @@ function Gown({ view }: { view: RegaliaView }) {
         <FabricMaterial color={gownHex} />
       </mesh>
       {/* shoulder yoke */}
-      <mesh position={[0, 2.8, 0]} scale={[1.18, 0.5, 0.85]} castShadow>
+      <mesh position={[0, 2.8, 0]} scale={[yokeWidth, 0.5, 0.85]} castShadow>
         <sphereGeometry args={[0.42, 28, 28]} />
         <FabricMaterial color={gownHex} />
       </mesh>
@@ -202,11 +248,11 @@ function Gown({ view }: { view: RegaliaView }) {
           {/* wrist + hand at the sleeve opening */}
           <mesh position={[0, -0.6, 0.02]}>
             <cylinderGeometry args={[0.045, 0.055, 0.3, 12]} />
-            <MannequinMaterial />
+            <SkinMaterial tone={mannequin.skinTone} />
           </mesh>
           <mesh position={[0, -0.76, 0.04]} castShadow>
             <sphereGeometry args={[0.08, 16, 16]} />
-            <MannequinMaterial />
+            <SkinMaterial tone={mannequin.skinTone} />
           </mesh>
         </group>
       ))}
@@ -333,11 +379,17 @@ function Cap({ view }: { view: RegaliaView }) {
   );
 }
 
-export default function RegaliaModel({ view }: { view: RegaliaView }) {
+export default function RegaliaModel({
+  view,
+  mannequin = DEFAULT_MANNEQUIN,
+}: {
+  view: RegaliaView;
+  mannequin?: MannequinConfig;
+}) {
   return (
     <group name="regalia-model">
-      <Mannequin />
-      <Gown view={view} />
+      <Mannequin config={mannequin} />
+      <Gown view={view} mannequin={mannequin} />
       <Hood view={view} />
       <Cap view={view} />
     </group>

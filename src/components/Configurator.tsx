@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import RegaliaSelector from "@/components/RegaliaSelector";
 import RegaliaInfoPanel from "@/components/RegaliaInfoPanel";
+import MannequinSelector from "@/components/MannequinSelector";
 import { AUTH_EVENT } from "@/components/SiteNav";
+import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
 import {
   getSession,
   listLooks,
@@ -37,6 +39,7 @@ export default function Configurator() {
   const [error, setError] = useState<string | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [looks, setLooks] = useState<SavedLook[]>([]);
+  const [mannequin, setMannequin] = useState<MannequinConfig>(DEFAULT_MANNEQUIN);
 
   useEffect(() => {
     const sync = () => {
@@ -109,7 +112,11 @@ export default function Configurator() {
           aria-label="3D regalia preview"
           className="relative h-[48dvh] min-h-[380px] shrink-0 bg-gradient-to-b from-cream via-cream-deep to-[#d8cbb6] lg:h-auto lg:min-h-[600px] lg:flex-1"
         >
-          {view ? <RegaliaViewer view={view} /> : <ViewerPlaceholder message="Dressing the mannequin…" />}
+          {view ? (
+            <RegaliaViewer view={view} mannequin={mannequin} />
+          ) : (
+            <ViewerPlaceholder message="Dressing the mannequin…" />
+          )}
           <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/60 px-3.5 py-1.5 text-[11px] font-medium text-cream backdrop-blur">
             Drag to rotate · scroll or pinch to zoom
           </p>
@@ -142,6 +149,8 @@ export default function Configurator() {
           ) : (
             !error && <p className="text-sm text-ink-soft">Loading universities…</p>
           )}
+
+          <MannequinSelector config={mannequin} onChange={setMannequin} />
 
           {/* Saved looks */}
           <div className="rounded-2xl border border-ink/10 bg-white p-4">

@@ -59,7 +59,7 @@ export default function RegaliaSelector({
         </legend>
         <div
           role="group"
-          className="grid grid-cols-2 rounded-full border border-ink/10 bg-white p-1"
+          className="grid grid-cols-3 rounded-full border border-ink/10 bg-white p-1"
         >
           {DEGREE_LEVELS.map((level) => {
             const selected = level === selectedLevel;

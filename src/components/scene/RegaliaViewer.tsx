@@ -3,13 +3,20 @@
 import { Canvas } from "@react-three/fiber";
 import { ContactShadows, OrbitControls } from "@react-three/drei";
 import type { RegaliaView } from "@/lib/regalia";
+import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
 import RegaliaModel from "./RegaliaModel";
 
 /**
  * Interactive studio viewer: soft-shadowed three-point lighting, grounded
  * contact shadows, gentle auto-rotate, orbit (drag) and zoom (scroll/pinch).
  */
-export default function RegaliaViewer({ view }: { view: RegaliaView }) {
+export default function RegaliaViewer({
+  view,
+  mannequin = DEFAULT_MANNEQUIN,
+}: {
+  view: RegaliaView;
+  mannequin?: MannequinConfig;
+}) {
   return (
     <Canvas
       shadows="percentage"
@@ -33,7 +40,7 @@ export default function RegaliaViewer({ view }: { view: RegaliaView }) {
       <directionalLight position={[-4, 3, -2]} intensity={0.45} />
       <directionalLight position={[0, 4, -5]} intensity={0.65} color="#fff2dd" />
 
-      <RegaliaModel view={view} />
+      <RegaliaModel view={view} mannequin={mannequin} />
       <ContactShadows
         key={`${view.university.id}-${view.degreeLevel}`}
         frames={1}

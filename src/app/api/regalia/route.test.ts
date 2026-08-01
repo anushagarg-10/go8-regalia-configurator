@@ -38,8 +38,15 @@ describe("GET /api/regalia", () => {
     expect(body.error).toMatch(/required/i);
   });
 
+  it("serves masters regalia", async () => {
+    const response = GET(request({ university: "uq", level: "masters" }));
+    expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.hood.accent.name).toBe("royal-blue");
+  });
+
   it("400s on an invalid degree level", async () => {
-    const response = GET(request({ university: "anu", level: "masters" }));
+    const response = GET(request({ university: "anu", level: "diploma" }));
     expect(response.status).toBe(400);
     const body = await response.json();
     expect(body.error).toMatch(/invalid degree level/i);

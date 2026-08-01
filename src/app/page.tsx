@@ -1,8 +1,18 @@
+import Image from "next/image";
 import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
 import Configurator from "@/components/Configurator";
 import LaurelStat from "@/components/LaurelStat";
 import { listUniversities } from "@/lib/regalia";
+
+const HERO_PORTRAIT =
+  "https://images.unsplash.com/photo-1623461487986-9400110de28e?q=80&w=900&auto=format&fit=crop";
+const HERO_SNAPSHOT =
+  "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?q=80&w=700&auto=format&fit=crop";
+const HERO_MOBILE =
+  "https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?q=80&w=1200&auto=format&fit=crop";
+const CTA_BACKDROP =
+  "https://images.unsplash.com/photo-1633734973050-d6499a977c17?q=80&w=1800&auto=format&fit=crop";
 
 function Eyebrow({ index, children }: { index: string; children: React.ReactNode }) {
   return (
@@ -23,7 +33,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Which cap will I actually wear?",
-    a: "Bachelors at most Go8 universities wear the flat trencher. PhD graduates typically wear a soft velvet bonnet. Melbourne is the famous exception: bachelor graduates do not wear a mortarboard at the ceremony at all, and the viewer reflects that.",
+    a: "Bachelors and masters graduates at the Go8 wear the flat trencher. PhD graduates typically wear a soft velvet bonnet. Melbourne is the famous exception: bachelor graduates do not wear a mortarboard at the ceremony at all, and the viewer reflects that.",
   },
   {
     q: "Can I save my look?",
@@ -48,40 +58,82 @@ export default function Home() {
 
       {/* Hero */}
       <section className="grain relative overflow-hidden">
-        <div className="mx-auto max-w-6xl px-4 pb-16 pt-14 sm:px-6 lg:pb-24 lg:pt-20">
-          <Eyebrow index="01">The 3D dressing room</Eyebrow>
-          <h1 className="mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-            Your graduation look,
-            <br />
-            <span className="font-script text-6xl font-normal text-maroon sm:text-7xl lg:text-8xl">
-              rendered before the big day
-            </span>
-          </h1>
-          <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
-            Pick any Group of Eight university, choose Bachelor or PhD, and walk around your gown,
-            hood, and cap in a live 3D studio. No stiff catalogue photos, no guessing what smalt
-            blue actually looks like.
-          </p>
+        <div className="mx-auto grid max-w-6xl gap-10 px-4 pb-16 pt-14 sm:px-6 lg:grid-cols-[1.25fr_1fr] lg:items-center lg:pb-24 lg:pt-20">
+          <div>
+            <Eyebrow index="01">The 3D dressing room</Eyebrow>
+            <h1 className="mt-5 max-w-3xl font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
+              Your graduation look,
+              <br />
+              <span className="font-script text-6xl font-normal text-maroon sm:text-7xl lg:text-8xl">
+                rendered before the big day
+              </span>
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-ink-soft sm:text-lg">
+              Pick any Group of Eight university and degree level, then walk around your gown,
+              hood, and cap in a live 3D studio. No stiff catalogue photos, no guessing what smalt
+              blue actually looks like.
+            </p>
 
-          <div className="mt-8 flex flex-wrap items-center gap-3">
-            <Link
-              href="/#configurator"
-              className="rounded-full bg-maroon px-6 py-3 text-sm font-semibold text-cream shadow-lg shadow-maroon/25 transition-colors hover:bg-maroon-deep"
-            >
-              Style my gown
-            </Link>
-            <Link
-              href="/#faq"
-              className="rounded-full border border-ink/15 bg-white/60 px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-maroon hover:text-maroon"
-            >
-              Read the fine print
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Link
+                href="/#configurator"
+                className="rounded-full bg-maroon px-6 py-3 text-sm font-semibold text-cream shadow-lg shadow-maroon/25 transition-colors hover:bg-maroon-deep"
+              >
+                Style my gown
+              </Link>
+              <Link
+                href="/#faq"
+                className="rounded-full border border-ink/15 bg-white/60 px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-maroon hover:text-maroon"
+              >
+                Read the fine print
+              </Link>
+            </div>
+
+            {/* mobile hero image */}
+            <div className="mt-8 overflow-hidden rounded-2xl border-4 border-white shadow-xl lg:hidden">
+              <Image
+                src={HERO_MOBILE}
+                alt="Graduate wearing an academic cap and gown"
+                width={1200}
+                height={800}
+                priority
+                className="h-52 w-full object-cover"
+              />
+            </div>
+
+            <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
+              <LaurelStat value="8" label="Go8 universities" />
+              <LaurelStat value="24" label="Regalia combinations" />
+              <LaurelStat value="360°" label="Orbit, zoom, admire" />
+            </div>
           </div>
 
-          <div className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
-            <LaurelStat value="8" label="Go8 universities" />
-            <LaurelStat value="16" label="Regalia combinations" />
-            <LaurelStat value="360°" label="Orbit, zoom, admire" />
+          {/* editorial photo collage */}
+          <div className="relative hidden lg:block">
+            <div className="relative ml-auto w-[360px]">
+              <div className="overflow-hidden rounded-b-3xl rounded-t-[180px] border-[6px] border-white shadow-[0_35px_70px_-30px_rgba(82,18,37,0.45)]">
+                <Image
+                  src={HERO_PORTRAIT}
+                  alt="Graduate in cap and gown smiling"
+                  width={720}
+                  height={1080}
+                  priority
+                  className="h-[480px] w-full object-cover"
+                />
+              </div>
+              <div className="absolute -left-28 bottom-8 w-56 -rotate-6 overflow-hidden rounded-2xl border-[6px] border-white shadow-xl">
+                <Image
+                  src={HERO_SNAPSHOT}
+                  alt="Graduates throwing their caps in the air"
+                  width={700}
+                  height={467}
+                  className="h-36 w-full object-cover"
+                />
+              </div>
+              <p className="absolute -right-6 top-4 rotate-6 font-script text-3xl text-maroon">
+                class of 2026!
+              </p>
+            </div>
           </div>
         </div>
 
@@ -174,7 +226,14 @@ export default function Home() {
 
       {/* CTA band */}
       <section className="relative overflow-hidden bg-charcoal">
-        <div className="grain absolute inset-0 opacity-30" aria-hidden />
+        <Image
+          src={CTA_BACKDROP}
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-30"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-charcoal/80 via-charcoal/60 to-charcoal/85" aria-hidden />
         <div className="relative mx-auto max-w-6xl px-4 py-20 text-center sm:px-6 lg:py-28">
           <p className="font-script text-5xl text-cream sm:text-6xl lg:text-7xl">
             Ready to be the main character?
@@ -235,6 +294,7 @@ export default function Home() {
         </div>
         <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
           © 2026 Regalia Eight. Colours are approximations; always confirm with your university.
+          Photography via Unsplash.
         </div>
       </footer>
     </div>

@@ -1,10 +1,14 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { signIn, signUp } from "@/lib/auth";
 import { announceAuthChange } from "@/components/SiteNav";
+
+const PANEL_PHOTO =
+  "https://images.unsplash.com/photo-1621376225372-c86f16f47a09?q=80&w=1000&auto=format&fit=crop";
 
 type Mode = "signin" | "signup";
 
@@ -36,7 +40,14 @@ export default function LoginPage() {
     <div className="flex min-h-dvh flex-col lg:flex-row">
       {/* Brand panel */}
       <aside className="relative flex flex-col justify-between overflow-hidden bg-maroon-deep px-8 py-10 text-cream lg:w-[44%] lg:px-12">
-        <div className="grain absolute inset-0 opacity-40" aria-hidden />
+        <Image
+          src={PANEL_PHOTO}
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 44vw, 100vw"
+          className="object-cover opacity-25"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-maroon-deep/70 via-maroon-deep/55 to-maroon-deep/85" aria-hidden />
         <Link href="/" className="relative z-10 flex items-baseline gap-1">
           <span className="font-display text-xl font-bold tracking-tight text-cream">Regalia</span>
           <span className="font-script text-2xl leading-none text-gold-soft">Eight</span>

@@ -4,13 +4,23 @@ import {
   type University,
   type RegaliaDressConfig,
 } from "@/data/go8Universities";
+import { mastersRegalia } from "@/data/mastersRegalia";
 
-export const DEGREE_LEVELS = ["bachelor", "phd"] as const;
+export const DEGREE_LEVELS = ["bachelor", "masters", "phd"] as const;
 export type DegreeLevel = (typeof DEGREE_LEVELS)[number];
 
 export const DEGREE_LEVEL_LABELS: Record<DegreeLevel, string> = {
   bachelor: "Bachelor",
+  masters: "Masters",
   phd: "PhD",
+};
+
+/**
+ * Hex approximations for researched colours that appear only in the masters
+ * supplement; the original seed colorHexMap is imported as-is and untouched.
+ */
+const SUPPLEMENTAL_HEX: Record<string, string> = {
+  "south-east-limestone": "#e6dfcf",
 };
 
 /**
@@ -69,7 +79,7 @@ export function resolveColor(name: string | null | undefined): ResolvedColor {
   if (!name) {
     return { name: "unspecified", hex: FALLBACK_HEX, mapped: false };
   }
-  const hex = colorHexMap[name];
+  const hex = colorHexMap[name] ?? SUPPLEMENTAL_HEX[name];
   if (!hex) {
     return { name, hex: FALLBACK_HEX, mapped: false };
   }
@@ -103,7 +113,9 @@ export function getRegaliaView(
   const university = getUniversityById(universityId);
   if (!university || !isDegreeLevel(level)) return null;
 
-  const config: RegaliaDressConfig = university[level];
+  const config: RegaliaDressConfig | undefined =
+    level === "masters" ? mastersRegalia[university.id] : university[level];
+  if (!config) return null;
 
   const gownColor = resolveColor(config.gownColor);
   const hoodBase = resolveColor(config.hoodBaseColor);

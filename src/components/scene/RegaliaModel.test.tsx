@@ -4,7 +4,7 @@ import type { Mesh, MeshStandardMaterial, Object3D } from "three";
 import RegaliaModel from "./RegaliaModel";
 import { getRegaliaView } from "@/lib/regalia";
 
-async function renderView(universityId: string, level: "bachelor" | "phd") {
+async function renderView(universityId: string, level: "bachelor" | "masters" | "phd") {
   const view = getRegaliaView(universityId, level);
   if (!view) throw new Error(`No view for ${universityId}/${level}`);
   const renderer = await ReactThreeTestRenderer.create(<RegaliaModel view={view} />);
@@ -19,7 +19,7 @@ describe("RegaliaModel", () => {
   it("mounts without throwing for every university and degree level", async () => {
     const ids = ["anu", "usyd", "unimelb", "uq", "uwa", "adelaide", "monash", "unsw"] as const;
     for (const id of ids) {
-      for (const level of ["bachelor", "phd"] as const) {
+      for (const level of ["bachelor", "masters", "phd"] as const) {
         const renderer = await renderView(id, level);
         const model = findByName(renderer.scene.instance, "regalia-model");
         expect(model, `${id}/${level}`).toBeDefined();
@@ -47,6 +47,20 @@ describe("RegaliaModel", () => {
     const renderer = await renderView("unimelb", "bachelor");
     expect(findByName(renderer.scene.instance, "cap")).toBeUndefined();
     expect(findByName(renderer.scene.instance, "hood-binding")).toBeDefined();
+  });
+
+  it("renders build-specific hair on the mannequin", async () => {
+    const view = getRegaliaView("anu", "bachelor")!;
+
+    const female = await ReactThreeTestRenderer.create(<RegaliaModel view={view} />);
+    expect(findByName(female.scene.instance, "hair-bun")).toBeDefined();
+    expect(findByName(female.scene.instance, "hair-crop")).toBeUndefined();
+
+    const male = await ReactThreeTestRenderer.create(
+      <RegaliaModel view={view} mannequin={{ build: "male", skinTone: "#6f4a30" }} />,
+    );
+    expect(findByName(male.scene.instance, "hair-crop")).toBeDefined();
+    expect(findByName(male.scene.instance, "hair-bun")).toBeUndefined();
   });
 
   it("renders a trencher board for trencher caps and a brim for bonnets", async () => {

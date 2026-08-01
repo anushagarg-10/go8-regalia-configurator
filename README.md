@@ -1,9 +1,10 @@
 # Regalia Eight · Go8 Graduation Regalia Configurator
 
-Pick an Australian Group of Eight university and a degree level (Bachelor or PhD) and
-preview the academic gown, hood, and cap in an interactive 3D studio: orbit, zoom,
-and rotate instead of static photos. Editorial landing page, graduate portal with
-saved looks, and a physically shaded cloth model, all data-driven.
+Pick an Australian Group of Eight university and a degree level (Bachelor, Masters,
+or PhD), choose a mannequin build and skin tone, and preview the academic gown, hood,
+and cap in an interactive 3D studio: orbit, zoom, and rotate instead of static photos.
+Editorial landing page, graduate portal with saved looks, and a physically shaded
+cloth model, all data-driven.
 
 ## Tech stack
 
@@ -19,6 +20,7 @@ saved looks, and a physically shaded cloth model, all data-driven.
 ```
 src/data/go8Universities.js    Researched seed data (imported as-is, do not edit)
 src/data/go8Universities.d.ts  Types describing the seed data's shape
+src/data/mastersRegalia.ts     Supplemental researched masters dress data, with sources
 src/lib/regalia.ts             Data access + colour resolution (the Supabase swap point)
 src/lib/auth.ts                Demo auth + saved looks in localStorage (Supabase Auth swap point)
 src/app/api/universities/      GET list of universities

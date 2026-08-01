@@ -46,8 +46,9 @@ describe("getUniversityById", () => {
 describe("isDegreeLevel", () => {
   it("accepts only the supported levels", () => {
     expect(isDegreeLevel("bachelor")).toBe(true);
+    expect(isDegreeLevel("masters")).toBe(true);
     expect(isDegreeLevel("phd")).toBe(true);
-    expect(isDegreeLevel("masters")).toBe(false);
+    expect(isDegreeLevel("diploma")).toBe(false);
     expect(isDegreeLevel("")).toBe(false);
     expect(isDegreeLevel(null)).toBe(false);
     expect(isDegreeLevel(42)).toBe(false);
@@ -128,6 +129,30 @@ describe("getRegaliaView", () => {
     expect(getRegaliaView("oxford", "bachelor")).toBeNull();
     expect(getRegaliaView("", "phd")).toBeNull();
     expect(getRegaliaView(null, "bachelor")).toBeNull();
-    expect(getRegaliaView("anu", "masters" as DegreeLevel)).toBeNull();
+    expect(getRegaliaView("anu", "diploma" as DegreeLevel)).toBeNull();
+  });
+
+  it("resolves masters regalia from the researched supplement", () => {
+    // UQ's level-based system: all masters hoods lined royal blue.
+    const uq = getRegaliaView("uq", "masters");
+    expect(uq?.hood.accent).toEqual({ name: "royal-blue", hex: "#2643a3", mapped: true });
+    expect(uq?.cap?.style).toBe("trencher");
+    expect(uq?.hasUnmappedColors).toBe(false);
+
+    // Adelaide masters: limestone lining via the supplemental hex map.
+    const adelaide = getRegaliaView("adelaide", "masters");
+    expect(adelaide?.hood.accent.mapped).toBe(true);
+    expect(adelaide?.hood.accent.hex).toBe("#e6dfcf");
+
+    // Monash keeps its turquoise base; faculty lining stays flagged.
+    const monash = getRegaliaView("monash", "masters");
+    expect(monash?.hood.base.hex).toBe("#40b5ad");
+    expect(monash?.hood.accent.mapped).toBe(false);
+    expect(monash?.hasUnmappedColors).toBe(true);
+
+    // Melbourne masters DO wear a trencher (unlike bachelors) and lose the white binding.
+    const unimelb = getRegaliaView("unimelb", "masters");
+    expect(unimelb?.cap?.style).toBe("trencher");
+    expect(unimelb?.hood.binding).toBeUndefined();
   });
 });
