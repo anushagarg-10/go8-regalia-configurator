@@ -103,10 +103,6 @@ export default function Home() {
             <LaurelStat value="360°" label="Orbit, zoom, admire" tone="light" />
           </div>
 
-          <p className="scribble-bob absolute right-6 top-24 hidden font-script text-3xl text-gold-soft sm:block lg:right-10 lg:text-4xl">
-            class of 2026!
-          </p>
-
           {/* Scroll cue */}
           <Link
             href="/#how-it-works"
@@ -119,21 +115,6 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Scrolling ribbon */}
-        <div className="marquee border-y border-ink/10 bg-maroon py-2.5">
-          <div className="marquee-track">
-            {[0, 1].map((copy) => (
-              <p
-                key={copy}
-                aria-hidden={copy === 1}
-                className="whitespace-nowrap pr-8 text-[11px] font-semibold uppercase tracking-[0.35em] text-cream/80"
-              >
-                Class of 2026 · ANU · Sydney · Melbourne · UQ · UWA · Adelaide · Monash · UNSW ·
-                Bachelor · Masters · PhD · Your gown in 3D ·{" "}
-              </p>
-            ))}
-          </div>
-        </div>
       </section>
 
       {/* How it works */}
@@ -356,7 +337,7 @@ export default function Home() {
           </div>
         </div>
         <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
-          © 2026 Regalia Eight. Colours are approximations; always confirm with your university.
+          © Regalia Eight. Colours are approximations; always confirm with your university.
           Photography via Unsplash.
         </div>
       </footer>

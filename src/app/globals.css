@@ -120,23 +120,6 @@ body {
   animation: scribble-bob 4s ease-in-out infinite;
 }
 
-/* Infinite marquee ribbon */
-.marquee {
-  overflow: hidden;
-}
-.marquee-track {
-  display: flex;
-  width: max-content;
-  animation: marquee 26s linear infinite;
-}
-.marquee:hover .marquee-track {
-  animation-play-state: paused;
-}
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
 /* Button shine sweep */
 .btn-shine {
   position: relative;
@@ -188,7 +171,6 @@ body {
   .floaty,
   .sway,
   .scribble-bob,
-  .marquee-track,
   .confetti-piece {
     animation: none;
   }
