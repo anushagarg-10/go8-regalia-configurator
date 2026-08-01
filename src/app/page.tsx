@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import SiteNav from "@/components/SiteNav";
-import Configurator from "@/components/Configurator";
 import LaurelStat from "@/components/LaurelStat";
 import Reveal from "@/components/Reveal";
 import { listUniversities } from "@/lib/regalia";
@@ -38,7 +37,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Can I save my look?",
-    a: "Yes. Create a free account from the Sign in button and a Save this look button appears in the configurator. Saved looks are stored in your browser in this demo.",
+    a: "Yes. The 3D studio opens with a free account: sign up, dress the mannequin, and use Save this look to keep your combinations. Accounts and saved looks are stored in your browser in this demo.",
   },
   {
     q: "Is this affiliated with the universities?",
@@ -79,10 +78,10 @@ export default function Home() {
 
             <div className="hero-rise hero-rise-4 mt-8 flex flex-wrap items-center gap-3">
               <Link
-                href="/#configurator"
+                href="/studio"
                 className="btn-shine rounded-full bg-maroon px-6 py-3 text-sm font-semibold text-cream shadow-lg shadow-maroon/25 transition-transform hover:scale-105 hover:bg-maroon-deep"
               >
-                Style my gown
+                Open the studio
               </Link>
               <Link
                 href="/#faq"
@@ -157,11 +156,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Configurator */}
-      <section id="configurator" className="scroll-mt-20">
+      {/* How it works */}
+      <section id="how-it-works" className="scroll-mt-20">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:py-20">
           <Reveal>
-            <Eyebrow index="02">Build your look</Eyebrow>
+            <Eyebrow index="02">How it works</Eyebrow>
             <h2 className="mt-4 font-display text-3xl font-bold tracking-tight sm:text-4xl">
               We don&apos;t just render gowns,{" "}
               <span className="font-script text-4xl font-normal text-maroon sm:text-5xl">
@@ -169,12 +168,70 @@ export default function Home() {
               </span>
             </h2>
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft sm:text-base">
-              Every colour below is driven by researched academic dress data. Where a colour depends
-              on your faculty, we tell you instead of pretending.
+              Every colour in the studio is driven by researched academic dress data, from official
+              regulations and university regalia suppliers. Where a colour depends on your faculty,
+              we ask instead of pretending.
             </p>
           </Reveal>
-          <Reveal delay={120} className="mt-8">
-            <Configurator />
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              {
+                step: "one",
+                title: "Pick your university",
+                copy: "All eight Go8 campuses, each with its real gown, hood, and cap rules.",
+              },
+              {
+                step: "two",
+                title: "Choose level & faculty",
+                copy: "Bachelor, Masters, or PhD, then your faculty for the exact hood colours.",
+              },
+              {
+                step: "three",
+                title: "Orbit your fit in 3D",
+                copy: "Spin the mannequin, swap builds and finishes, and save the looks you love.",
+              },
+            ].map((item, index) => (
+              <Reveal key={item.step} delay={index * 110}>
+                <div className="group h-full rounded-2xl border border-ink/10 bg-white p-6 transition-all duration-300 hover:-translate-y-1.5 hover:border-maroon/40 hover:shadow-xl hover:shadow-maroon/15">
+                  <p className="font-script text-4xl text-gold">{item.step}</p>
+                  <h3 className="mt-3 font-display text-lg font-bold text-ink group-hover:text-maroon">
+                    {item.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{item.copy}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          {/* Studio teaser */}
+          <Reveal delay={150} className="mt-10">
+            <div className="grain relative overflow-hidden rounded-3xl bg-maroon-deep px-6 py-10 text-center text-cream sm:px-12 lg:flex lg:items-center lg:justify-between lg:text-left">
+              <div className="relative z-10">
+                <p className="font-script text-3xl text-gold-soft">members only</p>
+                <h3 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
+                  The 3D studio opens with a free account
+                </h3>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-cream/70">
+                  Sign up in seconds to dress the mannequin, unlock faculty colours, and keep your
+                  saved looks waiting for graduation morning.
+                </p>
+              </div>
+              <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 lg:mt-0 lg:shrink-0">
+                <Link
+                  href="/studio"
+                  className="btn-shine rounded-full bg-cream px-6 py-3 text-sm font-bold text-maroon-deep shadow-xl transition-transform hover:scale-105"
+                >
+                  Open the studio
+                </Link>
+                <Link
+                  href="/login?mode=signup"
+                  className="rounded-full border border-cream/30 px-6 py-3 text-sm font-semibold text-cream transition-colors hover:border-cream hover:bg-cream/10"
+                >
+                  Create free account
+                </Link>
+              </div>
+            </div>
           </Reveal>
         </div>
       </section>
@@ -259,10 +316,10 @@ export default function Home() {
             Open the studio, spin the gown, screenshot the fit, and send it to the group chat.
           </p>
           <Link
-            href="/#configurator"
-            className="mt-8 inline-block rounded-full bg-cream px-8 py-3.5 text-sm font-bold text-maroon-deep shadow-xl transition-transform hover:scale-105"
+            href="/studio"
+            className="btn-shine mt-8 inline-block rounded-full bg-cream px-8 py-3.5 text-sm font-bold text-maroon-deep shadow-xl transition-transform hover:scale-105"
           >
-            Open the configurator
+            Open the studio
           </Link>
         </div>
       </section>
@@ -283,7 +340,7 @@ export default function Home() {
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cream">Explore</p>
             <ul className="mt-3 space-y-2 text-sm">
-              <li><Link href="/#configurator" className="hover:text-gold-soft">Configurator</Link></li>
+              <li><Link href="/studio" className="hover:text-gold-soft">The studio</Link></li>
               <li><Link href="/#universities" className="hover:text-gold-soft">Universities</Link></li>
               <li><Link href="/#faq" className="hover:text-gold-soft">FAQs</Link></li>
               <li><Link href="/login" className="hover:text-gold-soft">Graduate portal</Link></li>

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { signIn, signUp } from "@/lib/auth";
 import { announceAuthChange } from "@/components/SiteNav";
 
@@ -21,6 +21,13 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Deep links like /login?mode=signup open on the create-account tab.
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("mode") === "signup") {
+      setMode("signup");
+    }
+  }, []);
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     setBusy(true);
@@ -33,7 +40,7 @@ export default function LoginPage() {
       return;
     }
     announceAuthChange();
-    router.push("/#configurator");
+    router.push("/studio");
   }
 
   return (
@@ -177,8 +184,8 @@ export default function LoginPage() {
 
           <p className="mt-6 text-center text-sm text-ink-soft">
             Just browsing?{" "}
-            <Link href="/#configurator" className="font-semibold text-maroon underline-offset-2 hover:underline">
-              Open the configurator without an account
+            <Link href="/" className="font-semibold text-maroon underline-offset-2 hover:underline">
+              Explore the site without an account
             </Link>
           </p>
         </div>

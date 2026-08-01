@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSession, signOut, type Session } from "@/lib/auth";
 
@@ -10,8 +11,17 @@ export function announceAuthChange() {
   window.dispatchEvent(new Event(AUTH_EVENT));
 }
 
+const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/studio", label: "Studio" },
+  { href: "/#universities", label: "Universities" },
+  { href: "/#faq", label: "FAQs" },
+];
+
 export default function SiteNav() {
+  const pathname = usePathname();
   const [session, setSession] = useState<Session | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const sync = () => setSession(getSession());
@@ -24,9 +34,23 @@ export default function SiteNav() {
     };
   }, []);
 
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  function isActive(href: string): boolean {
+    if (href === "/") return pathname === "/";
+    return !href.includes("#") && pathname.startsWith(href);
+  }
+
+  function handleSignOut() {
+    signOut();
+    announceAuthChange();
+  }
+
   return (
-    <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/90 backdrop-blur">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
+    <header className="sticky top-0 z-40 border-b border-ink/10 bg-cream/85 backdrop-blur-md">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
         <Link href="/" className="flex items-baseline gap-1">
           <span className="font-display text-xl font-bold tracking-tight text-maroon">
             Regalia
@@ -34,46 +58,131 @@ export default function SiteNav() {
           <span className="font-script text-2xl leading-none text-gold">Eight</span>
         </Link>
 
-        <div className="hidden items-center gap-6 text-sm font-medium text-ink-soft sm:flex">
-          <Link href="/#configurator" className="transition-colors hover:text-maroon">
-            Configurator
-          </Link>
-          <Link href="/#universities" className="transition-colors hover:text-maroon">
-            Universities
-          </Link>
-          <Link href="/#faq" className="transition-colors hover:text-maroon">
-            FAQs
-          </Link>
+        {/* Desktop links */}
+        <div className="hidden items-center gap-7 md:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`relative py-1 text-sm font-medium transition-colors after:absolute after:bottom-0 after:left-0 after:h-0.5 after:rounded-full after:bg-maroon after:transition-all after:duration-300 hover:text-maroon ${
+                isActive(link.href)
+                  ? "text-maroon after:w-full"
+                  : "text-ink-soft after:w-0 hover:after:w-full"
+              }`}
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
-        {session ? (
-          <div className="flex items-center gap-2">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-maroon font-display text-sm font-bold text-cream">
-              {session.name.charAt(0).toUpperCase()}
-            </span>
-            <span className="hidden max-w-32 truncate text-sm font-medium text-ink sm:block">
-              {session.name}
-            </span>
-            <button
-              type="button"
-              onClick={() => {
-                signOut();
-                announceAuthChange();
-              }}
-              className="rounded-full border border-ink/15 px-3 py-1.5 text-sm font-medium text-ink-soft transition-colors hover:border-maroon hover:text-maroon"
-            >
-              Sign out
-            </button>
-          </div>
-        ) : (
-          <Link
-            href="/login"
-            className="rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm transition-colors hover:bg-maroon-deep"
-          >
-            Sign in
-          </Link>
-        )}
+        {/* Desktop auth */}
+        <div className="hidden items-center gap-2.5 md:flex">
+          {session ? (
+            <>
+              <span className="flex items-center gap-2 rounded-full border border-ink/10 bg-white py-1 pl-1 pr-3">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-maroon font-display text-xs font-bold text-cream">
+                  {session.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="max-w-28 truncate text-sm font-medium text-ink">
+                  {session.name}
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={handleSignOut}
+                className="rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-maroon hover:text-maroon"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="px-2 py-2 text-sm font-semibold text-ink-soft transition-colors hover:text-maroon"
+              >
+                Sign in
+              </Link>
+              <Link
+                href="/studio"
+                className="btn-shine rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-cream shadow-sm shadow-maroon/30 transition-transform hover:scale-105"
+              >
+                Open the studio
+              </Link>
+            </>
+          )}
+        </div>
+
+        {/* Mobile menu button */}
+        <button
+          type="button"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full border border-ink/10 bg-white md:hidden"
+        >
+          <span
+            className={`h-0.5 w-4.5 rounded-full bg-ink transition-transform ${menuOpen ? "translate-y-1 rotate-45" : ""}`}
+          />
+          <span
+            className={`h-0.5 w-4.5 rounded-full bg-ink transition-transform ${menuOpen ? "-translate-y-1 -rotate-45" : ""}`}
+          />
+        </button>
       </nav>
+
+      {/* Mobile menu */}
+      {menuOpen && (
+        <div className="border-t border-ink/10 bg-cream px-4 pb-5 pt-3 md:hidden">
+          <div className="flex flex-col gap-1">
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                className={`rounded-xl px-3 py-2.5 text-sm font-semibold ${
+                  isActive(link.href) ? "bg-blush text-maroon" : "text-ink hover:bg-white"
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <div className="mt-3 flex items-center gap-2.5 border-t border-ink/10 pt-4">
+            {session ? (
+              <>
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-maroon font-display text-sm font-bold text-cream">
+                  {session.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="flex-1 truncate text-sm font-medium text-ink">{session.name}</span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="rounded-full border border-ink/15 px-4 py-2 text-sm font-medium text-ink-soft"
+                >
+                  Sign out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 rounded-full border border-ink/15 bg-white px-4 py-2.5 text-center text-sm font-semibold text-ink"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  href="/studio"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 rounded-full bg-maroon px-4 py-2.5 text-center text-sm font-semibold text-cream"
+                >
+                  Open the studio
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </header>
   );
 }

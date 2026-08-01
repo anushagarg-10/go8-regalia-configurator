@@ -3,8 +3,8 @@
 Pick an Australian Group of Eight university, a degree level (Bachelor, Masters, or
 PhD), and your faculty, then preview the academic gown, hood, and cap on a boutique
 display mannequin in an interactive 3D studio: orbit, zoom, and rotate instead of
-static photos. Editorial landing page with scroll and hero animations, graduate
-portal with saved looks, and a physically shaded cloth model, all data-driven.
+static photos. A public marketing homepage explains the product; the 3D studio at
+`/studio` opens with a free demo account and keeps your saved looks.
 
 ## Tech stack
 
@@ -27,6 +27,7 @@ src/lib/auth.ts                Demo auth + saved looks in localStorage (Supabase
 src/app/api/universities/      GET list of universities
 src/app/api/regalia/           GET resolved config ?university=<id>&level=<bachelor|phd>
 src/app/login/                 Graduate portal (sign in / create account)
+src/app/studio/                Auth-gated 3D studio (the configurator lives here)
 src/components/                Landing sections, selector, info panel, configurator shell
 src/components/scene/          R3F mannequin model + studio viewer
 ```
