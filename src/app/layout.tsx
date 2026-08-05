@@ -28,11 +28,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Grad Choice · Go8 Graduation Regalia in 3D",
   description:
-    "Preview Australian Group of Eight graduation gowns, hoods, and caps in an interactive 3D studio. Eight universities, every colour sourced from official academic dress regulations.",
+    "See what your Go8 graduation gown, hood, and cap will actually look like in 3D, before the big day.",
   openGraph: {
     title: "Grad Choice · Go8 Graduation Regalia in 3D",
     description:
-      "Dress a 3D mannequin in your university's real graduation regalia: pick your Go8 campus, degree level, and faculty colours.",
+      "Pick your university, degree level, and faculty, then see your real academic regalia on a mannequin you can rotate and zoom.",
     type: "website",
     siteName: "Grad Choice",
     images: [
@@ -47,8 +47,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Grad Choice · Go8 Graduation Regalia in 3D",
-    description:
-      "Dress a 3D mannequin in your university's real graduation regalia, faculty colours included.",
+    description: "See your actual academic regalia in 3D before graduation day.",
   },
 };
 
@@ -58,7 +57,7 @@ const JSON_LD = {
   name: "Grad Choice",
   applicationCategory: "DesignApplication",
   description:
-    "Interactive 3D preview of Australian Group of Eight graduation regalia with researched faculty colours.",
+    "A 3D preview of graduation regalia for Australia's Group of Eight universities, with real per faculty hood colours.",
   operatingSystem: "Web",
   offers: { "@type": "Offer", price: "0", priceCurrency: "AUD" },
 };

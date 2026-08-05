@@ -11,7 +11,7 @@ export interface RegaliaDressConfig {
   hoodAccentColor: string;
   /** Only present where a university binds the hood edge (e.g. Melbourne bachelors). */
   hoodBinding?: string;
-  /** "trencher" | "bonnet" | "tudor-bonnet" | "none" — kept as string in the data. */
+  /** "trencher" | "bonnet" | "tudor-bonnet" | "none", kept as string in the data. */
   capStyle: string;
   capColor: string | null;
   capCordColor?: string;

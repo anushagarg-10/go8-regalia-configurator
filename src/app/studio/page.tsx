@@ -6,7 +6,7 @@ import Configurator from "@/components/Configurator";
 export const metadata: Metadata = {
   title: "The Studio · Grad Choice",
   description:
-    "Dress a 3D mannequin in your Group of Eight graduation regalia: university, degree level, faculty colours, and saved looks.",
+    "Pick your university, degree level, and faculty, then see your regalia rendered on a 3D mannequin you can rotate and zoom.",
 };
 
 export default function StudioPage() {

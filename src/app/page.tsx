@@ -216,7 +216,7 @@ export default function Home() {
                   className="group block rounded-2xl border border-ink/10 bg-white p-4 transition-all duration-300 hover:-translate-y-1.5 hover:rotate-1 hover:border-maroon/40 hover:shadow-xl hover:shadow-maroon/15"
                 >
                   <div className="flex items-center gap-2.5">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- tiny remote favicon, no optimization needed */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={universityLogoUrl(u.officialSource)}
                       alt=""

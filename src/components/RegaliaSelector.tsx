@@ -44,7 +44,7 @@ export default function RegaliaSelector({
                     : "border-ink/10 bg-white text-ink hover:-translate-y-px hover:border-maroon/40 hover:shadow-sm"
                 }`}
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- tiny remote favicon */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={universityLogoUrl(university.officialSource)}
                   alt=""
