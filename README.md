@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml/badge.svg)](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml)
 
+**Live demo: https://go8configurator.netlify.app**
+
 A 3D configurator for graduation regalia at Australia's Group of Eight universities.
 Pick a university, a degree level, and (where it matters) your faculty, and see the
 actual gown, hood, and cap colours on a mannequin you can rotate and zoom.
