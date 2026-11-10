@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useState, type FormEvent } from "react";
 import { announceAuthChange, signIn, signUp } from "@/lib/auth";
+import { safeRedirectPath } from "@/lib/safeRedirect";
 
 const PANEL_PHOTO =
   "https://images.unsplash.com/photo-1621376225372-c86f16f47a09?q=80&w=1000&auto=format&fit=crop";
@@ -45,8 +46,7 @@ function LoginScreen() {
     }
     announceAuthChange();
     // Shared-look links pass their destination through ?next=.
-    const next = searchParams.get("next");
-    router.push(next && next.startsWith("/") ? next : "/studio");
+    router.push(safeRedirectPath(searchParams.get("next")));
   }
 
   return (

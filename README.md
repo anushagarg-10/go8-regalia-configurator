@@ -68,7 +68,11 @@ variants) using `@react-three/test-renderer`, so they run headlessly in CI.
 - Real accounts. Supabase is the obvious next step, and the auth and data
   layers were written with that swap in mind, so it shouldn't touch the UI
 - An actual deployment people can use
-- A proper human figure instead of the procedural mannequin
+- A proper human figure instead of the procedural mannequin. I tried this on the
+  [`experiment/human-figure`](https://github.com/anushagarg-10/go8-regalia-configurator/tree/experiment/human-figure)
+  branch and it doesn't work yet: the clothes sit at fixed coordinates tuned for
+  the mannequin, so on a differently proportioned body they float. The fix is to
+  attach each garment to a bone in the skeleton instead
 
 ## About the data and the universities
 
