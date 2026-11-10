@@ -59,7 +59,7 @@ describe("RegaliaModel", () => {
     const male = await ReactThreeTestRenderer.create(
       <RegaliaModel
         view={view}
-        mannequin={{ build: "male", finish: "#6f4a30", outfit: "#22335c" }}
+        mannequin={{ build: "male", figure: "mannequin", finish: "#6f4a30", outfit: "#22335c" }}
       />,
     );
     expect(findByName(male.scene.instance, "foot-flat")).toBeDefined();
@@ -71,7 +71,7 @@ describe("RegaliaModel", () => {
     const renderer = await ReactThreeTestRenderer.create(
       <RegaliaModel
         view={view}
-        mannequin={{ build: "female", finish: "#f2efe9", outfit: "#a02334" }}
+        mannequin={{ build: "female", figure: "mannequin", finish: "#f2efe9", outfit: "#a02334" }}
       />,
     );
     const collar = findByName(renderer.scene.instance, "outfit-collar") as Mesh;

@@ -18,6 +18,32 @@ export default function MannequinSelector({ config, onChange }: MannequinSelecto
       <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
         Mannequin
       </legend>
+
+      {/* Figure style */}
+      <div role="group" className="mb-3 grid grid-cols-2 rounded-full border border-ink/10 bg-white p-1">
+        {(
+          [
+            ["mannequin", "Boutique mannequin"],
+            ["human", "Human (beta)"],
+          ] as const
+        ).map(([kind, label]) => {
+          const selected = config.figure === kind;
+          return (
+            <button
+              key={kind}
+              type="button"
+              aria-pressed={selected}
+              onClick={() => onChange({ ...config, figure: kind })}
+              className={`rounded-full px-3 py-2 text-sm font-semibold transition-colors ${
+                selected ? "bg-maroon text-cream shadow-sm" : "text-ink-soft hover:text-maroon"
+              }`}
+            >
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="flex items-center gap-3">
         <div role="group" className="grid flex-1 grid-cols-2 rounded-full border border-ink/10 bg-white p-1">
           {MANNEQUIN_BUILDS.map((build) => {
@@ -37,6 +63,7 @@ export default function MannequinSelector({ config, onChange }: MannequinSelecto
             );
           })}
         </div>
+        {config.figure === "mannequin" && (
         <div role="group" aria-label="Mannequin finish" className="flex items-center gap-1.5">
           {FINISHES.map((finish) => {
             const selected = finish.hex === config.finish;
@@ -57,9 +84,17 @@ export default function MannequinSelector({ config, onChange }: MannequinSelecto
             );
           })}
         </div>
+        )}
       </div>
 
+      {config.figure === "human" && (
+        <p className="mt-2 text-[11px] leading-relaxed text-ink-soft">
+          The human model wears its own outfit; regalia colours still follow your selection.
+        </p>
+      )}
+
       {/* What you're wearing under the gown: collar + legs take this colour */}
+      {config.figure === "mannequin" && (
       <div className="mt-3">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
           Your outfit underneath
@@ -95,6 +130,7 @@ export default function MannequinSelector({ config, onChange }: MannequinSelecto
           </label>
         </div>
       </div>
+      )}
     </fieldset>
   );
 }

@@ -8,7 +8,7 @@ describe("parseLookParams", () => {
       universityId: "monash",
       level: "masters",
       facultyId: "law",
-      mannequin: { build: "male", finish: FINISHES[3].hex, outfit: "#a02334" },
+      mannequin: { build: "male", figure: "human", finish: FINISHES[3].hex, outfit: "#a02334" },
     };
     const query = buildLookQuery(look);
     expect(parseLookParams(query)).toEqual(look);

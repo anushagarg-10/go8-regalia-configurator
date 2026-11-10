@@ -7,8 +7,12 @@
 
 export type MannequinBuild = "female" | "male";
 
+/** Boutique display mannequin, or a rigged human avatar (vendored, MIT). */
+export type FigureKind = "mannequin" | "human";
+
 export interface MannequinConfig {
   build: MannequinBuild;
+  figure: FigureKind;
   finish: string;
   /** Colour of the outfit worn under the gown (collar + legs below the hem). */
   outfit: string;
@@ -39,6 +43,7 @@ export const MANNEQUIN_BUILDS: { id: MannequinBuild; label: string }[] = [
 
 export const DEFAULT_MANNEQUIN: MannequinConfig = {
   build: "female",
+  figure: "mannequin",
   finish: FINISHES[0].hex,
   outfit: OUTFIT_COLORS[0].hex,
 };

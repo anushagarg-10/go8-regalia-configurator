@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { Component, Suspense, useMemo, type ReactNode } from "react";
 import {
   CatmullRomCurve3,
   LatheGeometry,
@@ -8,6 +8,7 @@ import {
 } from "three";
 import type { RegaliaView } from "@/lib/regalia";
 import { DEFAULT_MANNEQUIN, type MannequinConfig } from "@/lib/mannequin";
+import HumanFigure from "./HumanFigure";
 
 /**
  * Stylized boutique-mannequin wearing gown, hood, and cap.
@@ -240,12 +241,14 @@ function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConf
       </mesh>
       {/* shoulder yoke */}
       <mesh position={[0, 2.76, 0]} scale={[yokeWidth, 0.45, 0.8]} castShadow>
+        {/* y=2.76 is fixed to match the procedural mannequin's shoulders, not any real bone */}
         <sphereGeometry args={[0.38, 28, 28]} />
         <FabricMaterial color={gownHex} />
       </mesh>
       {/* sleeves, joined at the shoulder and hanging near-vertical */}
       {[-1, 1].map((side) => (
-        <group key={side} position={[side * 0.42, 2.26, 0.04]} rotation={[0.05, 0, side * -0.2]}>
+        // y=2.26 is the same fixed-coordinate assumption as the yoke above
+        <group key={side} position={[side * 0.42, 2.26, 0.04]} rotation={[0.05, 0, side * -0.2]}> 
           <mesh castShadow>
             <cylinderGeometry args={[0.13, sleeveBottom, 1.08, 20, 1, true]} />
             <FabricMaterial color={gownHex} />
@@ -257,15 +260,20 @@ function Gown({ view, mannequin }: { view: RegaliaView; mannequin: MannequinConf
               <SilkMaterial color={facingHex} />
             </mesh>
           )}
-          {/* slender wrist + elongated hand at the sleeve opening */}
-          <mesh position={[0, -0.56, 0.02]}>
-            <cylinderGeometry args={[0.032, 0.042, 0.26, 16]} />
-            <FinishMaterial finish={mannequin.finish} />
-          </mesh>
-          <mesh position={[0, -0.7, 0.03]} scale={[0.6, 1.45, 0.42]} rotation={[0.12, 0, 0]} castShadow>
-            <sphereGeometry args={[0.08, 20, 20]} />
-            <FinishMaterial finish={mannequin.finish} />
-          </mesh>
+          {/* slender wrist + elongated hand at the sleeve opening
+              (the human figure brings its own hands) */}
+          {mannequin.figure !== "human" && (
+            <>
+              <mesh position={[0, -0.56, 0.02]}>
+                <cylinderGeometry args={[0.032, 0.042, 0.26, 16]} />
+                <FinishMaterial finish={mannequin.finish} />
+              </mesh>
+              <mesh position={[0, -0.7, 0.03]} scale={[0.6, 1.45, 0.42]} rotation={[0.12, 0, 0]} castShadow>
+                <sphereGeometry args={[0.08, 20, 20]} />
+                <FinishMaterial finish={mannequin.finish} />
+              </mesh>
+            </>
+          )}
         </group>
       ))}
       {/* doctoral front facings */}
@@ -305,10 +313,12 @@ function Hood({ view }: { view: RegaliaView }) {
         </mesh>
       )}
       {/* back drape */}
+      {/* y=2.05 fixed to the procedural mannequin's neck, not attached to any bone */}
       <mesh name="hood-drape" position={[0, 2.05, -0.46]} rotation={[2.95, 0, 0]} scale={[0.92, 1, 0.48]} castShadow>
         <coneGeometry args={[0.37, 1.25, 24]} />
         <FabricMaterial color={colors.base.hex} />
       </mesh>
+      {/* y=1.93, same fixed-coordinate assumption as the drape above */}
       <mesh name="hood-lining" position={[0, 1.93, -0.52]} rotation={[2.95, 0, 0]} scale={[0.9, 1, 0.42]}>
         <coneGeometry args={[0.25, 0.92, 24]} />
         <SilkMaterial color={colors.accent.hex} />
@@ -322,16 +332,17 @@ function Trencher({ cap }: { cap: NonNullable<RegaliaView["cap"]> }) {
   const tasselHex = cap.cord?.hex ?? DEFAULT_TASSEL;
   return (
     <>
-      {/* skullcap */}
+      {/* skullcap, y=3.3 fixed to the procedural mannequin's head, not a bone */}
       <mesh position={[0, 3.3, 0]} scale={[1, 0.72, 1]} castShadow>
         <sphereGeometry args={[0.28, 28, 18, 0, Math.PI * 2, 0, Math.PI / 2]} />
         <FabricMaterial color={cap.color.hex} />
       </mesh>
-      {/* board, diamond to the front */}
+      {/* board, diamond to the front, y=3.46 same fixed-coordinate assumption */}
       <mesh name="cap-board" position={[0, 3.46, 0]} rotation={[0, Math.PI / 4, 0]} castShadow>
         <boxGeometry args={[0.82, 0.035, 0.82]} />
         <FabricMaterial color={cap.color.hex} />
       </mesh>
+      {/* y=3.49, same fixed-coordinate assumption */}
       <mesh position={[0, 3.49, 0]}>
         <cylinderGeometry args={[0.035, 0.035, 0.025, 16]} />
         <SilkMaterial color={tasselHex} />
@@ -353,17 +364,18 @@ function Bonnet({ cap }: { cap: NonNullable<RegaliaView["cap"]> }) {
   const tasselHex = cap.cord?.hex ?? DEFAULT_TASSEL;
   return (
     <>
-      {/* brim */}
+      {/* brim, y=3.32 fixed to the procedural mannequin's head, not a bone */}
       <mesh name="cap-brim" position={[0, 3.32, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
         <torusGeometry args={[0.33, 0.1, 16, 40]} />
         <FabricMaterial color={cap.color.hex} />
       </mesh>
-      {/* soft crown */}
+      {/* soft crown, y=3.45 same fixed-coordinate assumption */}
       <mesh position={[0, 3.45, 0]} scale={[1, 0.62, 1]} castShadow>
         <sphereGeometry args={[0.3, 28, 28]} />
         <FabricMaterial color={cap.color.hex} />
       </mesh>
       {cap.cord && (
+        // y=3.37, same fixed-coordinate assumption
         <mesh name="cap-cord" position={[0, 3.37, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[0.3, 0.022, 12, 40]} />
           <SilkMaterial color={cap.cord.hex} />
@@ -391,6 +403,21 @@ function Cap({ view }: { view: RegaliaView }) {
   );
 }
 
+/** If the avatar GLB fails to load, fall back to the mannequin rather than
+ * letting the error unmount the whole scene. */
+class FigureBoundary extends Component<
+  { fallback: ReactNode; children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
 export default function RegaliaModel({
   view,
   mannequin = DEFAULT_MANNEQUIN,
@@ -398,9 +425,23 @@ export default function RegaliaModel({
   view: RegaliaView;
   mannequin?: MannequinConfig;
 }) {
+  const human = mannequin.figure === "human";
   return (
     <group name="regalia-model">
-      <Mannequin config={mannequin} />
+      {human ? (
+        <FigureBoundary fallback={<Mannequin config={mannequin} />}>
+          <Suspense fallback={<Mannequin config={mannequin} />}>
+            <HumanFigure build={mannequin.build} />
+            {/* base plate still grounds the human figure */}
+            <mesh name="stand" position={[0, -0.02, 0]} receiveShadow>
+              <boxGeometry args={[1.5, 0.05, 1.5]} />
+              <meshStandardMaterial color={BASE_PLATE_COLOR} metalness={0.85} roughness={0.28} />
+            </mesh>
+          </Suspense>
+        </FigureBoundary>
+      ) : (
+        <Mannequin config={mannequin} />
+      )}
       <Gown view={view} mannequin={mannequin} />
       <Hood view={view} />
       <Cap view={view} />
