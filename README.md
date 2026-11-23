@@ -84,6 +84,12 @@ npm run build
 
 The first Playwright run needs a browser: `npx playwright install chromium`.
 
+To run the same E2E and accessibility suite against the live deployment:
+
+```bash
+BASE_URL=https://go8configurator.netlify.app npm run test:e2e
+```
+
 ## Project layout
 
 - `src/data` - the researched regalia data, with sources
