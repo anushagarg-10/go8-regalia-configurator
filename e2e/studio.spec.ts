@@ -62,6 +62,24 @@ test.describe("Studio configurator", () => {
     await expect(page.getByRole("button", { name: "UWA Bachelor", exact: true })).toHaveCount(0);
   });
 
+  test("saving right after switching university uses the new university's name", async ({
+    page,
+  }) => {
+    await openStudio(page);
+    // Slow the regalia API down like a real network, so the preview lags the click.
+    await page.route("**/api/regalia**", async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+
+    await page.getByRole("button", { name: /UWA/ }).click();
+    await expect(page.getByRole("button", { name: "Save this look" })).toBeDisabled();
+    await page.getByRole("button", { name: "Save this look" }).click();
+
+    await expect(page.getByRole("button", { name: "UWA Bachelor", exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "ANU Bachelor", exact: true })).toHaveCount(0);
+  });
+
   test("mannequin options update the shareable URL", async ({ page }) => {
     await openStudio(page);
     await page.getByRole("button", { name: "Men's", exact: true }).click();

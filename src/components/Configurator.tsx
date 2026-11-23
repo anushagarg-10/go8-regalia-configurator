@@ -164,8 +164,13 @@ export default function Configurator() {
     setFacultyId(null);
   }
 
+  // `view` lags the selection while /api/regalia is in flight; only save once
+  // it matches, or the look gets the previous university's label.
+  const viewIsCurrent =
+    view !== null && view.university.id === universityId && view.degreeLevel === level;
+
   function handleSaveLook() {
-    if (!session || !view) return;
+    if (!session || !view || !viewIsCurrent) return;
     const label = `${view.university.shortName} ${DEGREE_LEVEL_LABELS[view.degreeLevel]}`;
     setLooks(saveLook(session.email, { universityId, level, label }));
     // Celebration burst over the saved-looks card.
@@ -336,7 +341,7 @@ export default function Configurator() {
                 <button
                   type="button"
                   onClick={handleSaveLook}
-                  disabled={!view || currentSaved}
+                  disabled={!viewIsCurrent || currentSaved}
                   className="w-full rounded-full border border-maroon bg-maroon px-4 py-2 text-sm font-semibold text-cream transition-colors hover:bg-maroon-deep disabled:border-ink/10 disabled:bg-cream disabled:text-ink-soft"
                 >
                   {currentSaved ? "Look saved ✓" : "Save this look"}

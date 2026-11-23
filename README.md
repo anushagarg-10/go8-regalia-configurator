@@ -16,7 +16,7 @@ actual gown, hood, and cap colours on a mannequin you can rotate and zoom.
 | --- | --- |
 | **Stack** | Next.js 16 (App Router), React 19, TypeScript, React Three Fiber, Tailwind 4 |
 | **Unit and component tests** | 57 Vitest tests: data lookups, both API routes, auth, URL state, and the 3D scene via `@react-three/test-renderer` |
-| **End-to-end tests** | 19 Playwright tests on desktop Chromium, with the layout-sensitive ones repeated on a mobile viewport |
+| **End-to-end tests** | 20 Playwright tests on desktop Chromium, with the layout-sensitive ones repeated on a mobile viewport |
 | **Accessibility** | axe-core scans against WCAG 2.1 AA on every page, full keyboard control of the 3D viewer, reduced-motion support |
 | **CI** | GitHub Actions runs lint, unit tests, a production build, then the Playwright suite against that build |
 
@@ -128,9 +128,14 @@ AA rules, and fails the build on any violation. Alongside that:
   for anyone with reduced motion turned on in their OS
 - Every form control has a proper label
 
-Writing the E2E suite also caught a real bug: after signing in from a shared
-link, the studio read the URL before the client-side redirect had updated it,
-so the shared look was silently replaced with the defaults.
+The E2E suite also caught two real bugs that unit tests missed:
+
+- After signing in from a shared link, the studio read the URL before the
+  client-side redirect had updated it, so the shared look was silently replaced
+  with the defaults
+- Running the suite against the live site showed that saving a look straight
+  after switching university, before the new data arrived, saved it under the
+  previous university's name. A test now slows the API down to reproduce it
 
 The README demo is recorded by a script, so it stays current:
 `npm run demo:record` (with the app running) drives the studio with Playwright

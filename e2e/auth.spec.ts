@@ -56,12 +56,14 @@ test.describe("Graduate portal", () => {
   });
 
   for (const next of ["https://evil.example.com", "//evil.example.com"]) {
-    test(`an off-site ?next=${next} falls back to the studio`, async ({ page }) => {
+    test(`an off-site ?next=${next} falls back to the studio`, async ({ page, baseURL }) => {
       await page.goto(`/login?mode=signup&next=${encodeURIComponent(next)}`);
       await page.getByLabel("Email").fill(uniqueEmail());
       await page.getByLabel("Password").fill(TEST_PASSWORD);
       await page.getByRole("button", { name: "Create my account" }).click();
-      await expect(page).toHaveURL(/^http:\/\/localhost:3000\/studio/);
+      // Same origin as the app under test (local or deployed), never evil.example.com.
+      await expect(page).toHaveURL(/\/studio\?/);
+      expect(new URL(page.url()).origin).toBe(new URL(baseURL!).origin);
     });
   }
 });
