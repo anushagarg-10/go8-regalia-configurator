@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import RegaliaSelector from "@/components/RegaliaSelector";
@@ -34,10 +35,15 @@ function ViewerPlaceholder({ message }: { message: string }) {
 }
 
 export default function Configurator() {
-  // Mounted client-side only (behind StudioGate), so the URL is readable
-  // for shared-look deep links like /studio?uni=uq&level=masters.
+  // Shared-look deep links like /studio?uni=uq&level=masters. Read from the
+  // router, not window.location: after a client-side redirect from /login the
+  // component mounts before the browser URL has been updated.
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const initialLook = useMemo(
-    () => parseLookParams(typeof window === "undefined" ? "" : window.location.search),
+    () => parseLookParams(searchParams.toString()),
+    // Only the first render seeds state; later URL writes come from this component.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );
 
@@ -51,6 +57,10 @@ export default function Configurator() {
   const [looks, setLooks] = useState<SavedLook[]>([]);
   const [mannequin, setMannequin] = useState<MannequinConfig>(initialLook.mannequin);
   const [toast, setToast] = useState<string | null>(null);
+  // Turntable motion is on by default, off for people who ask for less motion.
+  const [autoRotate, setAutoRotate] = useState(
+    () => !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches,
+  );
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const toastTimer = useRef<number | undefined>(undefined);
   const [confetti, setConfetti] = useState<
@@ -60,8 +70,8 @@ export default function Configurator() {
   // Keep the URL in sync so the current look is always shareable.
   useEffect(() => {
     const query = buildLookQuery({ universityId, level, facultyId, mannequin });
-    window.history.replaceState(null, "", `${window.location.pathname}?${query}`);
-  }, [universityId, level, facultyId, mannequin]);
+    window.history.replaceState(null, "", `${pathname}?${query}`);
+  }, [pathname, universityId, level, facultyId, mannequin]);
 
   function showToast(message: string) {
     window.clearTimeout(toastTimer.current);
@@ -191,13 +201,14 @@ export default function Configurator() {
             <RegaliaViewer
               view={view}
               mannequin={mannequin}
+              autoRotate={autoRotate}
               onCanvasReady={(canvas) => (canvasRef.current = canvas)}
             />
           ) : (
             <ViewerPlaceholder message="Dressing the mannequin…" />
           )}
           <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-ink/60 px-3.5 py-1.5 text-[11px] font-medium text-cream backdrop-blur">
-            Drag to rotate · scroll or pinch to zoom
+            Drag or use arrow keys to rotate · scroll, pinch or +/- to zoom
           </p>
           {view && (
             <p className="pointer-events-none absolute left-4 top-4 rounded-full bg-white/70 px-3 py-1.5 font-display text-xs font-bold text-maroon backdrop-blur">
@@ -221,6 +232,24 @@ export default function Configurator() {
                 Save card ↓
               </button>
             </div>
+          )}
+          {view && (
+            // WCAG 2.2.2: anything that moves on its own needs a way to stop it.
+            <button
+              type="button"
+              aria-label={autoRotate ? "Pause rotation" : "Resume rotation"}
+              title={autoRotate ? "Pause rotation" : "Resume rotation"}
+              onClick={() => setAutoRotate((on) => !on)}
+              className="absolute bottom-14 right-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/85 text-maroon-deep shadow-sm backdrop-blur transition-transform hover:scale-105"
+            >
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden fill="currentColor">
+                {autoRotate ? (
+                  <path d="M4 2.5h2.5v11H4zM9.5 2.5H12v11H9.5z" />
+                ) : (
+                  <path d="M4.5 2.2v11.6L13.5 8z" />
+                )}
+              </svg>
+            </button>
           )}
           {toast && (
             <p
@@ -257,11 +286,15 @@ export default function Configurator() {
 
           {/* Faculty picker, shown when this selection has researched faculty colours */}
           {view && view.faculties.length > 0 && (
-            <fieldset>
-              <legend className="mb-2.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft">
+            <div>
+              <label
+                htmlFor="faculty-select"
+                className="mb-2.5 block text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-soft"
+              >
                 Faculty / discipline
-              </legend>
+              </label>
               <select
+                id="faculty-select"
                 value={facultyId ?? ""}
                 onChange={(e) => setFacultyId(e.target.value || null)}
                 className="w-full rounded-xl border border-ink/15 bg-white px-3.5 py-2.5 text-sm font-medium text-ink outline-none transition-colors focus:border-maroon focus:ring-2 focus:ring-maroon/20"
@@ -273,7 +306,7 @@ export default function Configurator() {
                   </option>
                 ))}
               </select>
-            </fieldset>
+            </div>
           )}
 
           <MannequinSelector config={mannequin} onChange={setMannequin} />

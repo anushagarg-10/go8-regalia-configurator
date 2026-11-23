@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import SiteNav from "@/components/SiteNav";
 import StudioGate from "@/components/StudioGate";
 import Configurator from "@/components/Configurator";
@@ -15,7 +16,10 @@ export default function StudioPage() {
       <SiteNav />
       <StudioGate>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:pb-16">
-          <Configurator />
+          {/* Configurator reads shared-look params via useSearchParams. */}
+          <Suspense fallback={null}>
+            <Configurator />
+          </Suspense>
         </div>
       </StudioGate>
     </div>

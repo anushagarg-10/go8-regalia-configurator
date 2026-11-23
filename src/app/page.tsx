@@ -349,7 +349,7 @@ export default function Home() {
             </ul>
           </div>
         </div>
-        <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/40">
+        <div className="border-t border-cream/10 py-5 text-center text-xs text-cream/65">
           © Grad Choice. Colours are approximations; always confirm with your university.
           Photography via Unsplash.
         </div>
