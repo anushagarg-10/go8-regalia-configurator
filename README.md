@@ -1,4 +1,4 @@
-# Grad Choice
+# Grad Choice: Go8 Regalia Configurator
 
 [![CI](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml/badge.svg)](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml)
 
@@ -38,8 +38,9 @@ src/data            (researched regalia data, with sources)
 The current look always lives in the URL (`/studio?uni=uq&level=phd&faculty=...`),
 so any configuration can be shared as a link, and survives a sign-in redirect.
 
-I built this as a portfolio project. Partly to get more comfortable with React
-Three Fiber, and partly because it's genuinely hard to find out what your own
+I built this as a portfolio project, learning React Three Fiber and WebGL from
+scratch along the way. Partly to get comfortable with real-time 3D on the web,
+and partly because it's genuinely hard to find out what your own
 academic dress will actually look like before graduation day, especially once
 faculty specific hood colours are involved.
 
@@ -55,6 +56,10 @@ faculty specific hood colours are involved.
 - You can copy a link to your exact look, or download it as a PNG card
 - A basic account system (stored in the browser, no real backend yet) lets you
   save looks so they're still there next time
+- The 3D viewer works without a mouse: arrow keys rotate and tilt, `+`/`-`
+  zoom, Home resets, and screen readers hear what changed
+- The turntable rotation can be paused, and stays still by default if your
+  device is set to reduce motion
 
 ## Where the data comes from
 
@@ -87,7 +92,13 @@ The first Playwright run needs a browser: `npx playwright install chromium`.
 - `src/lib/auth.ts` - localStorage based demo auth
 - `src/app/api` - the two API routes the UI actually talks to
 - `src/app/studio` - the 3D configurator itself, sitting behind a demo login
-- `src/components/scene` - the mannequin and regalia geometry
+- `src/components/scene` - the mannequin and regalia geometry, plus the
+  keyboard-accessible 3D viewer
+- `e2e` - Playwright end-to-end and axe-core accessibility tests
+- `playwright.config.ts` - runs against the dev server locally and the
+  production build in CI, always on port 3000
+- `scripts/record-demo.mjs` - records the README demo GIF
+- `.github/workflows/ci.yml` - the two CI jobs (unit tests and build, then E2E)
 
 ## Tests
 
