@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import SiteNav from "@/components/SiteNav";
-import StudioGate from "@/components/StudioGate";
+import StudioIntro from "@/components/StudioIntro";
 import Configurator from "@/components/Configurator";
 
 export const metadata: Metadata = {
@@ -14,14 +14,14 @@ export default function StudioPage() {
   return (
     <div className="grain min-h-dvh bg-cream text-ink">
       <SiteNav />
-      <StudioGate>
+      <StudioIntro>
         <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:pb-16">
           {/* Configurator reads shared-look params via useSearchParams. */}
           <Suspense fallback={null}>
             <Configurator />
           </Suspense>
         </div>
-      </StudioGate>
+      </StudioIntro>
     </div>
   );
 }

@@ -2,7 +2,8 @@
 
 [![CI](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml/badge.svg)](https://github.com/anushagarg-10/go8-regalia-configurator/actions/workflows/ci.yml)
 
-**Live demo: https://go8configurator.netlify.app**
+**Live demo: https://go8configurator.netlify.app** (no sign-up needed, go
+straight to [the studio](https://go8configurator.netlify.app/studio))
 
 A 3D configurator for graduation regalia at Australia's Group of Eight universities.
 Pick a university, a degree level, and (where it matters) your faculty, and see the
@@ -16,7 +17,7 @@ actual gown, hood, and cap colours on a mannequin you can rotate and zoom.
 | --- | --- |
 | **Stack** | Next.js 16 (App Router), React 19, TypeScript, React Three Fiber, Tailwind 4 |
 | **Unit and component tests** | 57 Vitest tests: data lookups, both API routes, auth, URL state, and the 3D scene via `@react-three/test-renderer` |
-| **End-to-end tests** | 20 Playwright tests on desktop Chromium, with the layout-sensitive ones repeated on a mobile viewport |
+| **End-to-end tests** | 21 Playwright tests on desktop Chromium, with the layout-sensitive ones repeated on a mobile viewport |
 | **Accessibility** | axe-core scans against WCAG 2.1 AA on every page, full keyboard control of the 3D viewer, reduced-motion support |
 | **CI** | GitHub Actions runs lint, unit tests, a production build, then the Playwright suite against that build |
 
@@ -54,8 +55,9 @@ faculty specific hood colours are involved.
 - Everything on screen is procedural geometry and shader materials built in
   Three.js. No downloaded 3D model files
 - You can copy a link to your exact look, or download it as a PNG card
-- A basic account system (stored in the browser, no real backend yet) lets you
-  save looks so they're still there next time
+- Open to everyone: the whole studio works without an account. A basic account
+  system (stored in the browser, no real backend yet) is only for saving looks,
+  and a guest's current look carries through sign-up
 - The 3D viewer works without a mouse: arrow keys rotate and tilt, `+`/`-`
   zoom, Home resets, and screen readers hear what changed
 - The turntable rotation can be paused, and stays still by default if your
@@ -97,7 +99,7 @@ BASE_URL=https://go8configurator.netlify.app npm run test:e2e
   plug in later)
 - `src/lib/auth.ts` - localStorage based demo auth
 - `src/app/api` - the two API routes the UI actually talks to
-- `src/app/studio` - the 3D configurator itself, sitting behind a demo login
+- `src/app/studio` - the 3D configurator itself, open to guests
 - `src/components/scene` - the mannequin and regalia geometry, plus the
   keyboard-accessible 3D viewer
 - `e2e` - Playwright end-to-end and axe-core accessibility tests
@@ -116,7 +118,8 @@ variants) using `@react-three/test-renderer`, so they run headlessly.
 **End to end (Playwright, `e2e/`).** Real browser runs of the flows people
 actually use:
 
-- Signing up, signing in, bad passwords, and the studio's members-only gate
+- Using the studio as a guest, and a guest's look surviving sign-up
+- Signing up, signing in, and bad passwords
 - A shared look link surviving the trip through login
 - Off-site `?next=` redirects being refused
 - Switching university, level, faculty, and mannequin, with the URL kept in sync
@@ -125,7 +128,7 @@ actually use:
 - Driving the whole configurator, 3D viewer included, from the keyboard
 
 **Accessibility (axe-core).** `e2e/accessibility.spec.ts` scans the landing
-page, login, the studio gate, and the signed-in studio against WCAG 2.1 A and
+page, login, the studio as a guest, and the signed-in studio against WCAG 2.1 A and
 AA rules, and fails the build on any violation. Alongside that:
 
 - The 3D viewer is focusable. Arrow keys orbit and tilt, `+`/`-` zoom, Home

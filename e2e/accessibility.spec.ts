@@ -36,9 +36,9 @@ test.describe("Accessibility (axe-core, WCAG 2.1 AA)", () => {
     await expectNoAxeViolations(page);
   });
 
-  test("studio gate (signed out)", async ({ page }) => {
-    await page.goto("/studio");
-    await expect(page.getByRole("link", { name: "Create free account" })).toBeVisible();
+  test("studio as a guest (signed out) @mobile", async ({ page }) => {
+    await page.goto("/studio?uni=usyd&level=bachelor");
+    await expect(page.getByRole("combobox", { name: "Faculty / discipline" })).toBeVisible();
     await expectNoAxeViolations(page);
   });
 

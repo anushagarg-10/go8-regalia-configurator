@@ -2,19 +2,34 @@ import { expect, test } from "@playwright/test";
 import { signUp, TEST_PASSWORD, uniqueEmail } from "./helpers";
 
 test.describe("Graduate portal", () => {
-  test("the studio is gated for signed-out visitors @mobile", async ({ page }) => {
+  test("signed-out visitors can use the studio as a guest @mobile", async ({ page }) => {
     await page.goto("/studio?uni=uq&level=phd");
 
-    await expect(
-      page.getByRole("heading", { name: "The studio is behind the velvet rope" }),
-    ).toBeVisible();
+    await expect(page.getByText("No sign-up needed.")).toBeVisible();
+    await expect(page.getByRole("button", { name: /UQ/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "PhD" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByLabel("3D preview of UQ PhD regalia")).toBeVisible();
+  });
 
-    // Both calls to action carry the full shared-look URL through login.
-    const createLink = page.getByRole("link", { name: "Create free account" });
-    await expect(createLink).toHaveAttribute(
-      "href",
-      `/login?mode=signup&next=${encodeURIComponent("/studio?uni=uq&level=phd")}`,
-    );
+  test("a guest who signs up keeps the look they built", async ({ page }) => {
+    await page.goto("/studio");
+    await page.getByRole("button", { name: /Monash/ }).click();
+    await page.getByRole("button", { name: "Masters" }).click();
+    await expect(page).toHaveURL(/uni=monash&level=masters/);
+
+    // Saving needs an account; the prompt carries the current look through sign-up.
+    await expect(page.getByRole("button", { name: "Save this look" })).toHaveCount(0);
+    await page.getByRole("link", { name: "Create free account" }).click();
+    await expect(page).toHaveURL(/\/login\?mode=signup&next=/);
+
+    await page.getByLabel("Email").fill(uniqueEmail("guest"));
+    await page.getByLabel("Password").fill(TEST_PASSWORD);
+    await page.getByRole("button", { name: "Create my account" }).click();
+
+    await expect(page.getByRole("heading", { name: /Welcome back/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Monash/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Masters" })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("button", { name: "Save this look" })).toBeEnabled();
   });
 
   test("signing up lands in the studio and keeps a shared look @mobile", async ({ page }) => {
@@ -28,7 +43,7 @@ test.describe("Graduate portal", () => {
   test("sign in rejects unknown accounts and wrong passwords", async ({ page }) => {
     const { email } = await signUp(page);
     await page.getByRole("button", { name: "Sign out" }).click();
-    await expect(page.getByRole("link", { name: "Create free account" })).toBeVisible();
+    await expect(page.getByText("No sign-up needed.")).toBeVisible();
 
     await page.goto("/login");
     await page.getByLabel("Email").fill(uniqueEmail("nobody"));

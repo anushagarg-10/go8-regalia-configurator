@@ -35,7 +35,7 @@ const FAQS: { q: string; a: string }[] = [
   },
   {
     q: "Can I save my look?",
-    a: "Yes. The 3D studio opens with a free account: sign up, dress the mannequin, and use Save this look to keep your combinations. Accounts and saved looks are stored in your browser in this demo.",
+    a: "Yes. Anyone can use the 3D studio without an account, and every look can be shared as a link. To keep looks with Save this look, create a free account. Accounts and saved looks are stored in your browser in this demo.",
   },
   {
     q: "Is this affiliated with the universities?",
@@ -87,7 +87,7 @@ export default function Home() {
               href="/studio"
               className="btn-shine rounded-full bg-cream px-6 py-3 text-sm font-bold text-maroon-deep shadow-xl transition-transform hover:scale-105"
             >
-              Open the studio
+              Try the 3D studio
             </Link>
             <Link
               href="/#faq"
@@ -96,6 +96,9 @@ export default function Home() {
               Read the fine print
             </Link>
           </div>
+          <p className="hero-rise hero-rise-4 mt-3 text-xs font-medium text-cream/80">
+            No sign-up needed. Jump straight in.
+          </p>
 
           <div className="hero-rise hero-rise-5 mt-12 flex flex-wrap items-center gap-x-10 gap-y-6">
             <LaurelStat value="8" label="Go8 universities" tone="light" />
@@ -169,13 +172,13 @@ export default function Home() {
           <Reveal delay={150} className="mt-10">
             <div className="grain relative overflow-hidden rounded-3xl bg-maroon-deep px-6 py-10 text-center text-cream sm:px-12 lg:flex lg:items-center lg:justify-between lg:text-left">
               <div className="relative z-10">
-                <p className="font-script text-3xl text-gold-soft">members only</p>
+                <p className="font-script text-3xl text-gold-soft">no sign-up needed</p>
                 <h3 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
-                  The 3D studio opens with a free account
+                  Step straight into the 3D studio
                 </h3>
                 <p className="mt-2 max-w-xl text-sm leading-relaxed text-cream/70">
-                  Sign up in seconds to dress the mannequin, unlock faculty colours, and keep your
-                  saved looks waiting for graduation morning.
+                  Dress the mannequin and try faculty colours right away. A free account is only
+                  for keeping your saved looks waiting for graduation morning.
                 </p>
               </div>
               <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-3 lg:mt-0 lg:shrink-0">

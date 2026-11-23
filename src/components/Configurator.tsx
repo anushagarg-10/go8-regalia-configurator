@@ -381,10 +381,15 @@ export default function Configurator() {
               </div>
             ) : (
               <p className="mt-2 text-sm text-ink-soft">
-                <Link href="/login" className="font-semibold text-maroon underline-offset-2 hover:underline">
-                  Sign in
+                <Link
+                  href={`/login?mode=signup&next=${encodeURIComponent(
+                    `${pathname}?${buildLookQuery({ universityId, level, facultyId, mannequin })}`,
+                  )}`}
+                  className="font-semibold text-maroon underline-offset-2 hover:underline"
+                >
+                  Create a free account
                 </Link>{" "}
-                to save looks and come back to them later.
+                to save looks and come back to them later. Your current look comes with you.
               </p>
             )}
           </div>
